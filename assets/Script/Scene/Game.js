@@ -111,6 +111,11 @@ cc.Class({
         cc.director.getCollisionManager().enabled = false;
         // cc.director.getCollisionManager().enabledDebugDraw = false;
     },
+    _conflictMethod() {
+        console.log('conflict here')
+        const a = 1
+        console.log(a + 1)
+    },
 
     _loadBackground () {
         let url = 'Image/game_bg';
