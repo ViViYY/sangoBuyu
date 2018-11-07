@@ -119,6 +119,13 @@ cc.Class({
     _anotherConflickFunc() {
         console.log('should cause conflict here.')
     },
+
+    ff () {
+        this._conflictMethod();
+        let a = 1;
+        console.log('a = '  +  a);
+    },
+
     _loadBackground () {
         let url = 'Image/game_bg';
         Global.ResourcesManager.loadList([url], Define.resourceType.CCSpriteFrame, () => {
