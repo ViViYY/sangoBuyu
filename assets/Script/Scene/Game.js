@@ -109,6 +109,9 @@ cc.Class({
         Global.SocketController.offFishCreate();
         Global.SocketController.offSyncGameData();
         cc.director.getCollisionManager().enabled = false;
+
+
+        
         // cc.director.getCollisionManager().enabledDebugDraw = false;
     },
     _conflictMethod() {
