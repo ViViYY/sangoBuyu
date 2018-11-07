@@ -1,18 +1,26 @@
+import Define from './../Define'
+
 const ResourcesManager = function () {
     let that = {};
     that.resources = {};
+    let logOpen = false;
     const load = function (path, type, cb) {
         var t;
         if(type == Define.resourceType.CCSpriteFrame){
             t = cc.SpriteFrame;
         } else if(type == Define.resourceType.CCSpriteAtlas){
             t = cc.SpriteAtlas;
+        } else if(type == Define.resourceType.CCButton){
+            t = cc.Prefab;
+        } else if(type == Define.resourceType.CCFont){
+            t = cc.Font;
         }
+
         cc.loader.loadRes(path, t, (err, res) => {
             if (err) {
-                console.log(' ResourcesManager load, path + ' + path + ' - err : ' + err);
+                if(logOpen) console.log(' ResourcesManager load, path + ' + path + ' - err : ' + err);
             } else {
-                console.log(' ResourceManager load res success: ' + path + ' , type: ' + res.__classname__ );
+                if(logOpen) console.log(' ResourceManager load res success: ' + path + ' , type: ' + res.__classname__ );
                 if(cb){
                     cb(path, res);
                 }
@@ -21,12 +29,12 @@ const ResourcesManager = function () {
     };
     that.loadList = function (pathList, type, cb) {
         let _loadCount = 0;
-        console.log(' ResourceManager loadList start, count: ' + pathList.length);
+        if(logOpen) console.log(' ResourceManager loadList start, count: ' + pathList.length);
         const loadCb = function (path, res) {
             _loadCount++;
             that.resources[path] = res;
             if(_loadCount == pathList.length){
-                console.log(' 全部资源加载完毕 ');
+                if(logOpen) console.log(' 全部资源加载完毕 ');
                 if(cb){
                     cb();
                 }
@@ -36,7 +44,7 @@ const ResourcesManager = function () {
             var resPath = pathList[i];
             //资源存在
             if(that.resources[resPath]){
-                console.log(' ResourceManager load res exist path: ' + resPath + ' , type: ' + that.resources[resPath].__classname__ );
+                if(logOpen) console.log(' ResourceManager load res exist path: ' + resPath + ' , type: ' + that.resources[resPath].__classname__ );
                 if(cb){
                     cb();
                 }
