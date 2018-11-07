@@ -109,9 +109,8 @@ cc.Class({
         Global.SocketController.offFishCreate();
         Global.SocketController.offSyncGameData();
         cc.director.getCollisionManager().enabled = false;
-
-
-        
+        let te = 'aa';
+        console.log('te = ' + te);
         // cc.director.getCollisionManager().enabledDebugDraw = false;
     },
     _conflictMethod() {
