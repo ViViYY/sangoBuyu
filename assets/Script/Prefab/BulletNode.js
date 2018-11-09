@@ -30,7 +30,7 @@ cc.Class({
 
 
     onLoad () {
-        this.logOpen = false;
+        this.logOpen = true;
     },
 
     onDestroy () {
@@ -68,8 +68,8 @@ cc.Class({
         }
     },
     onCollisionEnter: function (other, self) {
-        if(this.logOpen) console.log('self = ' + self.tag);
-        if(this.logOpen) console.log('other = ' + other.node.name);
+        if(this.logOpen) console.log('[bullet]self = ' + self.tag);
+        if(this.logOpen) console.log('[bullet]other = ' + other.node.name);
         //命中鱼
         if(Define.ColliderType.Fish == other.tag){
             this.node.destroy();

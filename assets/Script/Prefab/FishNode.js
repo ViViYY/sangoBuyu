@@ -7,6 +7,10 @@ cc.Class({
 
     properties: {
         fishPrefab: [cc.Prefab],
+        webNodePrefab: {
+            type: cc.Prefab,
+            default: null,
+        },
         _animation: {
             type: cc.Animation,
             default: null,
@@ -54,7 +58,7 @@ cc.Class({
     },
 
     onLoad () {
-        this.logOpen = false;
+        this.logOpen = true;
     },
     onDestroy () {
         // this.node.removeAllActions();
@@ -104,7 +108,10 @@ cc.Class({
         this._animation.getComponent(cc.Animation).play(actionName);
     },
     onCollisionEnter: function (other, self) {
-        if(this.logOpen) console.log('onCollisionEnter:other:' + other.name + ' - self:' + self.name);
+        if(this.logOpen) console.log('[fish]onCollisionEnter:other:' + other.name + ' - self:' + self.name);
+        let webNode = cc.instantiate(this.webNodePrefab);
+        webNode.getComponent('WebNode').init(1);
+        this.node.addChild(webNode);
     },
     onCollisionStay: function (other, self) {},
     onCollisionExit: function (other, self) {},

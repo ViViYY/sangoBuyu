@@ -48,14 +48,14 @@ const SocketController = function () {
             console.log('重新连接成功');
         });
     };
-    const notify = function (msg, data, cb) {
-        console.log(' notify to server msg = ' + msg + ', callbackIndex =  ' + _callbackIndex + ' , data =  ' + JSON.stringify(data));
+    const notify = function (msg, data, cb, noLog) {
+        if(!noLog) console.log(' notify to server msg = ' + msg + ', callbackIndex =  ' + _callbackIndex + ' , data =  ' + JSON.stringify(data));
         _socket.emit('notify', {msg:msg, callbackIndex:_callbackIndex, data:data});
         _callbackIndex++;
     };
-    const request = function (msg, data, cb) {
+    const request = function (msg, data, cb, noLog) {
         _callbackMap[_callbackIndex] = cb;
-        notify(msg, data);
+        notify(msg, data, noLog);
     };
     that.login = function (username, password, cb) {
         console.log('socket:' + _socket.readyState);
@@ -82,7 +82,7 @@ const SocketController = function () {
         request('ask_room_data', {}, cb);
     };
     that.playerShot = function (data, cb) {
-        request('player_shot', {rotation:data}, cb);
+        request('player_shot', {rotation:data}, cb, true);
     };
     that.onPlayerShot = function (cb) {
         _event.on('player_shot', cb);
