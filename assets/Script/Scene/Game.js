@@ -20,7 +20,6 @@ cc.Class({
         },
         _cannonList: [],
         _fishList: [],
-        // _fishPath: [],
     },
 
     onLoad () {
@@ -101,6 +100,45 @@ cc.Class({
             let fishData = data.data.fishData;
             this.refreshData(fishData);
         });
+        //玩家发射炮弹
+        Global.SocketController.onPlayerShot( (data) => {
+            let shotData = data.data;
+            // console.log('@@onPlayerShot:' + JSON.stringify(shotData));
+            for (let i = 0; i < this._cannonList.length; i++) {
+                const otherCannon = this._cannonList[i];
+                // console.log(otherCannon.getComponent('CannonNode').uid);
+                const ouid = otherCannon.getComponent('CannonNode').uid;
+                console.log('otherPlayerShotPlay' + shotData.shotter);
+                console.log('ouid' + ouid);
+                if(ouid === shotData.shotter){
+                    otherCannon.getComponent('CannonNode').otherPlayerShotPlay(shotData.rotation);
+                }
+            }
+        });
+        //其他玩家离开
+        Global.SocketController.onPlayerExitRoom( (data) => {
+            let playerData = data.data;
+            console.log('onPlayerExitRoom:' + JSON.stringify(data));
+            let playerRemoveIndex = -1;
+            for (let i = 0; i < this._cannonList.length; i++) {
+                const otherCannon = this._cannonList[i];
+                const ouid = otherCannon.getComponent('CannonNode').uid;
+                if(ouid === playerData.uid){
+                    playerRemoveIndex = i;
+                    otherCannon.getComponent('CannonNode').leave();
+                }
+            }
+            //list移除
+            if(playerRemoveIndex > -1){
+                this._cannonList.splice(playerRemoveIndex, 1);
+            }
+        });
+        //get-notification-'shot'
+        cc.director.on('shot', function (data) {
+            Global.SocketController.playerShot(data,  () => {
+
+            })
+        });
     },
     onDestroy () {
         console.log('Game Scene onDestroy');
@@ -108,9 +146,10 @@ cc.Class({
         Global.SocketController.offSyncGameData();
         Global.SocketController.offFishCreate();
         Global.SocketController.offSyncGameData();
+        Global.SocketController.offPlayerShot();
+        Global.SocketController.offPlayerExitRoom();
         cc.director.getCollisionManager().enabled = false;
-        let te = 'aa';
-        console.log('te = ' + te);
+        cc.director.off('shot');
         // cc.director.getCollisionManager().enabledDebugDraw = false;
     },
 
@@ -127,7 +166,6 @@ cc.Class({
             let cameraNode = this.node.getChildByName('Main Camera');
             // this.node.runAction(cc.rotateBy(5, 45, 45));
             //this.node.rotation = 45;
-            // this.createFish(10101);
 
             Global.ComponentFactory.createButtonByAtlas('Prefab/buttonSimple', (buttonPrefab) => {
                 // 返回按钮
@@ -166,7 +204,7 @@ cc.Class({
             let cannonNodePrefab = Global.ResourcesManager.getRes(url);
             let cannonNode = cc.instantiate(cannonNodePrefab);
             this._bgNode.addChild(cannonNode);
-            cannonNode.getComponent('CannonNode').initCannon(_level, _seatId);
+            cannonNode.getComponent('CannonNode').initCannon(_uid, _level, _seatId);
             this._cannonList.push(cannonNode);
             if(_uid == Global.GameData.player.uid){
                 this._cannonNode = cannonNode;

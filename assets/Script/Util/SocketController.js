@@ -23,7 +23,7 @@ const SocketController = function () {
             let _msg = data.msg;
             let _callbackIndex = data.callbackIndex;
             let _data = data.data;
-            if(_msg != 'syncGameData'){
+            if(_msg != 'syncGameData' && _msg != 'fishCreate'){
                 console.log(' get server msg = ' + _msg + ', callbackIndex =  ' + _callbackIndex + ' , data =  ' + JSON.stringify(_data));
             }
             _event.fire(_msg, _data);
@@ -72,10 +72,24 @@ const SocketController = function () {
     that.exitRoom = function (cb) {
         request('exit_room', {}, cb);
     };
+    that.onPlayerExitRoom = function (cb) {
+        _event.on('player_exit', cb);
+    };
+    that.offPlayerExitRoom = function (cb) {
+        _event.off('player_exit', cb);
+    };
     that.askRoomData = function (cb) {
         request('ask_room_data', {}, cb);
     };
-
+    that.playerShot = function (data, cb) {
+        request('player_shot', {rotation:data}, cb);
+    };
+    that.onPlayerShot = function (cb) {
+        _event.on('player_shot', cb);
+    };
+    that.offPlayerShot = function (cb) {
+        _event.off('player_shot', cb);
+    };
 
 
     that.onPlayerJoinRoom = function (cb) {

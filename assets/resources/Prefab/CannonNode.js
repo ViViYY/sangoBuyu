@@ -1,5 +1,3 @@
-import Global from './../Global'
-import Define from './../Define'
 
 cc.Class({
     extends: cc.Component,
@@ -10,6 +8,13 @@ cc.Class({
         _animation: {
             type: cc.Animation,
             default: null,
+        },
+        _uid: {
+            type: cc.Integer,
+            default: -1,
+        },
+        uid: {
+            get () {return this._uid;},
         },
         _level: {
             type: cc.Integer,
@@ -33,7 +38,8 @@ cc.Class({
 
     },
 
-    initCannon (level, seatId) {
+    initCannon (uid, level, seatId) {
+        this._uid = uid;
         this._level = level;
         this._seatId = seatId;
         this.node.zIndex = 100;
@@ -69,8 +75,7 @@ cc.Class({
         py -= cc.view.getVisibleSize().height / 2;
         let dx = px - this.node.getPosition().x;
         let dy = py - this.node.getPosition().y;
-        var angle = Math.atan2(dy, -dx) * 180 / Math.PI - 90;
-        this.node.rotation = angle;
+        this.node.rotation = Math.atan2(dy, -dx) * 180 / Math.PI - 90;
     },
 
     endShot () {
@@ -83,6 +88,22 @@ cc.Class({
         }
         this._isShotting = true;
         this._animation.getComponent(cc.Animation).play('cannon' + this._level);
+        //send-notification-'shot'
+        cc.director.emit('shot', this.node.rotation);
+    },
+
+    otherPlayerShotPlay (rotation) {
+        console.log('otherPlayerShotPlay');
+        //rotation
+        this.node.rotation = rotation;
+        //play
+        this._isShotting = true;
+        this._animation.getComponent(cc.Animation).play('cannon' + this._level);
+    },
+
+    leave () {
+        console.log('[Cannon:]leave');
+        this.node.destroy();
     },
 
     shotEnd() {
