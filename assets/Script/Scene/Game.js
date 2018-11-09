@@ -23,6 +23,19 @@ cc.Class({
     },
 
     onLoad () {
+        this.sx = 1;
+        this.sy = 1;
+        let frameSize = cc.view.getFrameSize();
+        let designSize = cc.view.getDesignResolutionSize();
+        let p1 = designSize.width / designSize.height;
+        let p2 = frameSize.width / frameSize.height;
+        cc.view.setDesignResolutionSize(designSize.width, designSize.height, cc.ResolutionPolicy.SHOW_ALL);
+        if(p1 < p2){
+            this.sx = frameSize.width / designSize.width;
+        } else {
+            this.sy = frameSize.height / designSize.height;
+        }
+
         this.node.on(cc.Node.EventType.TOUCH_START, (event) => {
             if(this._cannonNode){
                 this._cannonNode.getComponent('CannonNode').changeRotation(event.touch.getLocation().x, event.touch.getLocation().y);
@@ -160,6 +173,8 @@ cc.Class({
             let bg = this._bgNode.addComponent(cc.Sprite);
             var obj = Global.ResourcesManager.getRes(url);
             bg.spriteFrame = obj;
+            this._bgNode.scaleX = this.sx;
+            this._bgNode.scaleY = this.sy;
             //bg.node.scale = 1;
 
             let cameraNode = this.node.getChildByName('Main Camera');
@@ -169,8 +184,8 @@ cc.Class({
             Global.ComponentFactory.createButtonByAtlas('Prefab/buttonSimple', (buttonPrefab) => {
                 // 返回按钮
                 var buttonBack = cc.instantiate(buttonPrefab);
-                this._bgNode.addChild(buttonBack);
-                buttonBack.setPosition(buttonBack.getContentSize().width / 2 - cc.view.getVisibleSize().width / 2, cc.view.getVisibleSize().height / 2 - buttonBack.getContentSize().height / 2);
+                this.node.addChild(buttonBack);
+                buttonBack.setPosition(buttonBack.getContentSize().width / 2 - cc.view.getFrameSize().width / 2, cc.view.getFrameSize().height / 2 - buttonBack.getContentSize().height / 2);
                 // 按钮样式
                 buttonBack.getComponent('ButtonSimple').changeStyle(ButtonSimpleStype.BACK);
                 // 设置文本
@@ -202,7 +217,7 @@ cc.Class({
         Global.ResourcesManager.loadList([url], Define.resourceType.CCPrefab, () => {
             let cannonNodePrefab = Global.ResourcesManager.getRes(url);
             let cannonNode = cc.instantiate(cannonNodePrefab);
-            this._bgNode.addChild(cannonNode);
+            this.node.addChild(cannonNode);
             cannonNode.getComponent('CannonNode').initCannon(_uid, _level, _seatId);
             this._cannonList.push(cannonNode);
             if(_uid == Global.GameData.player.uid){
@@ -220,7 +235,7 @@ cc.Class({
             // fishNode.setPosition(-100, -100);
             fishNode.zIndex = 80;
             fishNode.getComponent('FishNode').initFish(fishData);
-            this._bgNode.addChild(fishNode);
+            this.node.addChild(fishNode);
         });
     },
 

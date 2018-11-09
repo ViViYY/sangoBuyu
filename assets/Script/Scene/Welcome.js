@@ -19,6 +19,19 @@ cc.Class({
     },
 
     onLoad () {
+        this.sx = 1;
+        this.sy = 1;
+        let frameSize = cc.view.getFrameSize();
+        let designSize = cc.view.getDesignResolutionSize();
+        let p1 = designSize.width / designSize.height;
+        let p2 = frameSize.width / frameSize.height;
+        cc.view.setDesignResolutionSize(designSize.width, designSize.height, cc.ResolutionPolicy.SHOW_ALL);
+        if(p1 < p2){
+            this.sx = frameSize.width / designSize.width;
+        } else {
+            this.sy = frameSize.height / designSize.height;
+        }
+
         cc.director.on('connect_Success', this._connectServerSuccess, this);
         // 已经登陆过
         if(Global.GameData && Global.GameData.player && Global.GameData.player.uid){
@@ -48,6 +61,8 @@ cc.Class({
             let bg = this._bgNode.addComponent(cc.Sprite);
             var obj = Global.ResourcesManager.getRes(url);
             bg.spriteFrame = obj;
+            this._bgNode.scaleX = this.sx;
+            this._bgNode.scaleY = this.sy;
 
             this._loadButton();
         });

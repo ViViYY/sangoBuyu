@@ -107,7 +107,7 @@ cc.Class({
     },
 
     leave () {
-        console.log('[Cannon:]leave');
+        // console.log('[Cannon:]leave');
         this.node.destroy();
     },
 
