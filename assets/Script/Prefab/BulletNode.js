@@ -30,7 +30,7 @@ cc.Class({
 
 
     onLoad () {
-        this.logOpen = true;
+        this.logOpen = false;
     },
 
     onDestroy () {
@@ -67,7 +67,7 @@ cc.Class({
             this.node.destroy();
         }
     },
-    onCollisionEnter: function (other, self) {
+    onCollisionEnter (other, self) {
         if(this.logOpen) console.log('[bullet]self = ' + self.tag);
         if(this.logOpen) console.log('[bullet]other = ' + other.node.name);
         //命中鱼
@@ -75,7 +75,7 @@ cc.Class({
             this.node.destroy();
         }
     },
-    onCollisionStay: function (other, self) {},
-    onCollisionExit: function (other, self) {},
+    onCollisionStay (other, self) {},
+    onCollisionExit (other, self) {},
 
 });

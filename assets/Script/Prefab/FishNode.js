@@ -1,4 +1,5 @@
 import Global from './../Global';
+import Define from './../Define';
 
 const FISH_KIND_LIST_INDEX = {10101:0, 10201:1, 10301:2};
 
@@ -58,7 +59,7 @@ cc.Class({
     },
 
     onLoad () {
-        this.logOpen = true;
+        this.logOpen = false;
     },
     onDestroy () {
         // this.node.removeAllActions();
@@ -107,14 +108,14 @@ cc.Class({
     playAnimation (actionName) {
         this._animation.getComponent(cc.Animation).play(actionName);
     },
-    onCollisionEnter: function (other, self) {
+    onCollisionEnter (other, self) {
         if(this.logOpen) console.log('[fish]onCollisionEnter:other:' + other.name + ' - self:' + self.name);
-        let webNode = cc.instantiate(this.webNodePrefab);
-        webNode.getComponent('WebNode').init(1);
-        this.node.addChild(webNode);
+        if(Define.ColliderType.Fish === self.tag && Define.ColliderType.Bullet === other.tag){
+            let webNode = cc.instantiate(this.webNodePrefab);
+            webNode.getComponent('WebNode').init(1);
+            this.node.addChild(webNode);
+        }
     },
-    onCollisionStay: function (other, self) {},
-    onCollisionExit: function (other, self) {},
 
     moveEnd () {
         this.playAnimation('move');

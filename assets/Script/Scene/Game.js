@@ -60,7 +60,7 @@ cc.Class({
             // console.log(JSON.stringify(this._fishPath));
         });
         cc.director.getCollisionManager().enabled = true;
-        // cc.director.getCollisionManager().enabledDebugDraw = true;
+        cc.director.getCollisionManager().enabledDebugDraw = true;
         this._loadBackground();
     },
 
@@ -106,10 +106,9 @@ cc.Class({
             // console.log('@@onPlayerShot:' + JSON.stringify(shotData));
             for (let i = 0; i < this._cannonList.length; i++) {
                 const otherCannon = this._cannonList[i];
-                // console.log(otherCannon.getComponent('CannonNode').uid);
+                // console.log(i + ':' + otherCannon.getComponent('CannonNode').uid);
                 const ouid = otherCannon.getComponent('CannonNode').uid;
-                console.log('otherPlayerShotPlay' + shotData.shotter);
-                console.log('ouid' + ouid);
+                // console.log('otherPlayerShotPlay' + shotData.shotter);
                 if(ouid === shotData.shotter){
                     otherCannon.getComponent('CannonNode').otherPlayerShotPlay(shotData.rotation);
                 }
@@ -150,7 +149,7 @@ cc.Class({
         Global.SocketController.offPlayerExitRoom();
         cc.director.getCollisionManager().enabled = false;
         cc.director.off('shot');
-        // cc.director.getCollisionManager().enabledDebugDraw = false;
+        cc.director.getCollisionManager().enabledDebugDraw = false;
     },
 
     _loadBackground () {

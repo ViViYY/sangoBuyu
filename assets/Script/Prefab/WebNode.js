@@ -1,3 +1,5 @@
+import Define from './../Define';
+
 cc.Class({
     extends: cc.Component,
 
@@ -14,7 +16,12 @@ cc.Class({
 
     init (level) {
         this.level = level;
-        this.Sprite.spriteFrame = this.webList[this.level];
+        this.getComponent(cc.Sprite).spriteFrame = this.webList[this.level];
+        setTimeout( () => {
+            this.node.destroy();
+        }, Define.webLifeTime);
     },
+
+
 
 });

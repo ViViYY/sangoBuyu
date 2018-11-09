@@ -15,4 +15,9 @@ Define.get = 'get';
 Define.set = 'set';
 Define.both = 'both';
 
+Define.webLifeTime = 300;
+
+Define.bulletTag = 0;
+Define.fishTag = 1;
+
 export default Define;

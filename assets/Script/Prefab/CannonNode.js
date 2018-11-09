@@ -1,3 +1,4 @@
+import Global from './../Global';
 
 cc.Class({
     extends: cc.Component,
@@ -92,13 +93,17 @@ cc.Class({
         cc.director.emit('shot', this.node.rotation);
     },
 
+    //正常逻辑是要在炮筒播放完动画之后才发射炮弹
+    //考虑到延迟造成的炮弹丢失
+    //直接发射炮弹
     otherPlayerShotPlay (rotation) {
-        console.log('otherPlayerShotPlay');
+        // console.log('otherPlayerShotPlay');
         //rotation
         this.node.rotation = rotation;
         //play
         this._isShotting = true;
         this._animation.getComponent(cc.Animation).play('cannon' + this._level);
+        this.shot();
     },
 
     leave () {
@@ -108,7 +113,9 @@ cc.Class({
 
     shotEnd() {
         this._isShotting = false;
-        this.shot();
+        if(Global.GameData.getPlayer().uid === this.uid){
+            this.shot();
+        }
     },
 
     shot () {
