@@ -1,30 +1,32 @@
-import Global from './../Global'
-import Define from "../Define";
+import Global from './../Global';
+
+const FISH_KIND_LIST_INDEX = {10101:0, 10201:1, 10301:2};
 
 cc.Class({
     extends: cc.Component,
 
     properties: {
+        fishPrefab: [cc.Prefab],
         _animation: {
             type: cc.Animation,
             default: null,
         },
-        _id: {
+        _fid: {
             type: cc.Integer,
             default: 0,
         },
-        id: {
-            get () {return this._id;},
-            set (val) {this._id = val;},
+        fid: {
+            get () {return this._fid;},
+            set (val) {this._fid = val;},
             visible: false,
         },
-        _fishId: {
+        _fishKind: {
             type: cc.Integer,
             default: 0,
         },
-        fishId: {
-            get () {return this._fishId;},
-            set (val) {this._fishId = val;},
+        fishKind: {
+            get () {return this._fishKind;},
+            set (val) {this._fishKind = val;},
             visible: false,
         },
         _pathIndex: {
@@ -48,10 +50,7 @@ cc.Class({
         _posPre: {
             default: cc.v2(0, 0),
         },
-        _pathPoints: [],
-        _initSuccess: false,
-        fishList: []
-
+        // _initSuccess: false,
     },
 
     onLoad () {
@@ -62,25 +61,21 @@ cc.Class({
     },
 
     initFish (fishData) {
-        this._id = fishData.id;
-        this._fishId = fishData.fid;
+        this._fid = fishData.fid;
+        this._fishKind = fishData.kind;
         this._pathIndex = fishData.pathIndex;
         this._step = fishData.step;
         this._posPre = this.node.getPosition();
-        let url = 'Animation/fish/fish_' + this._fishId + '/fish_' + this._fishId;
-        console.log('url = ' + url);
-        Global.ResourcesManager.loadList([url], Define.resourceType.CCPrefab, () => {
-            let fishAnimationPrefab = Global.ResourcesManager.getRes(url);
-            this._animation = cc.instantiate(fishAnimationPrefab);
-            this.node.addChild(this._animation);
-            this.playAnimation();
-            this._initSuccess = true;
-            this._movebyPath();
-            this._refreshPosition();
-        });
+        //animation
+        this._animation = cc.instantiate(this.fishPrefab[FISH_KIND_LIST_INDEX[this._fishKind]]);
+        this.node.addChild(this._animation);
+        this.playAnimation('move');
+        this._initSuccess = true;
+        this._moveByPath();
+        this._refreshPosition();
     },
 
-    _movebyPath () {
+    _moveByPath () {
         this._pathPoints = Global.FishPathManager.getPath(this._pathIndex);
     },
 
@@ -101,69 +96,25 @@ cc.Class({
         this.node.setPosition(temp);
         //角度
         let posCur = this.node.getPosition();
-        let angle = objPos[2];
-        this.node.rotation = angle;
+        this.node.rotation = objPos[2];
         this._posPre = posCur;
     },
 
-    playAnimation () {
-        this._animation.getComponent(cc.Animation).play('move');
+    playAnimation (actionName) {
+        this._animation.getComponent(cc.Animation).play(actionName);
     },
     onCollisionEnter: function (other, self) {
-        if(this.logOpen) console.log('onCollisionEnter');
+        if(this.logOpen) console.log('onCollisionEnter:other:' + other.name + ' - self:' + self.name);
     },
     onCollisionStay: function (other, self) {},
     onCollisionExit: function (other, self) {},
 
-    moveRandomBezier () {
-        let bezier = [cc.v2(0, cc.view.getVisibleSize().height / 2), cc.v2(300, -cc.view.getVisibleSize().height / 2), cc.v2(300, 100)];
-        let bezierAction = cc.bezierTo(5, bezier);
-        let seq = cc.sequence(bezierAction, cc.callFunc(this.moveBezierEnd.bind(this)));
-        this.node.runAction(seq);
+    moveEnd () {
+        this.playAnimation('move');
     },
 
-    moveRandomBezier2 () {
-        let windowSize = cc.view.getVisibleSize();
-        let px = this.node.getPosition().x;
-        let py = this.node.getPosition().y;
-        px += windowSize.width / 2;
-        if(px > windowSize.width){
-            px -= windowSize.width;
-        }
-        if(py > windowSize.height){
-            py -= windowSize.height;
-        }
-        let px2 = math.random() * windowSize.width;
-        let py2 = math.random() * windowSize.height;
-        let px3 = math.random() * windowSize.width;
-        let py3 = math.random() * windowSize.height;
-        let bezier = [cc.v2(px, py), cc.v2(px2, py2), cc.v2(px3, py3)];
-        let bezierAction = cc.bezierTo(5, bezier);
-        let seq = cc.sequence(bezierAction, cc.callFunc(this.moveBezierEnd.bind(this)));
-        this.node.runAction(seq);
-    },
-
-    moveBezierEnd () {
-        this.moveRandomBezier();
-    },
-
-    update (dt) {
-
-        //
-        // this._posPre = posCur;
-        // this._posIndex ++;
-        // if(this._posIndex >= this._pathPoints.length){
-        //
-        // }
-        // this._refreshPosition();
+    captureEnd () {
 
     },
 
 });
-
-//不显示spriteFrame属性
-// cc.Class.Attr.setClassAttr(FishNode, 'id', 'visible', false);
-// cc.Class.Attr.setClassAttr(FishNode, 'fishId', 'visible', false);
-// cc.Class.Attr.setClassAttr(FishNode, 'pathIndex', 'visible', false);
-// cc.Class.Attr.setClassAttr(FishNode, 'step', 'visible', false);
-

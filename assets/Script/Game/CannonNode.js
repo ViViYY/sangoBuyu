@@ -5,6 +5,7 @@ cc.Class({
     extends: cc.Component,
 
     properties: {
+        cannonPrefabs: [cc.Prefab],
         _animation: {
             type: cc.Animation,
             default: null,
@@ -33,31 +34,51 @@ cc.Class({
     initCannon (level, seatId) {
         this._level = level;
         this._seatId = seatId;
-        let url = 'Animation/cannon/cannon' + this._level;
         this.node.zIndex = 100;
-        Global.ResourcesManager.loadList([url], Define.resourceType.CCPrefab, () => {
-            let cannonPrefab = Global.ResourcesManager.getRes(url);
-            this._animation = cc.instantiate(cannonPrefab);
-            this.node.addChild(this._animation);
-            this._animation.setPosition(0, this._animation.getContentSize().height / 2);
-            switch (this._seatId) {
-                case 0:
-                    this.node.setPosition(0, - cc.view.getVisibleSize().height / 2);
-                    break;
-                case 1:
-                    this.node.setPosition(- cc.view.getVisibleSize().width / 2, 0);
-                    break;
-                case 2:
-                    this.node.setPosition(0, cc.view.getVisibleSize().height / 2);
-                    break;
-                case 3:
-                    this.node.setPosition(cc.view.getVisibleSize().width / 2, 0);
-                    break;
-                default:
-                    break;
-            }
-            this.changeRotation(cc.view.getVisibleSize().width / 2, cc.view.getVisibleSize().height / 2);
-        });
+        // let url = 'Animation/cannon/cannon' + this._level;
+        // Global.ResourcesManager.loadList([url], Define.resourceType.CCPrefab, () => {
+        //     let cannonPrefab = Global.ResourcesManager.getRes(url);
+        //     this._animation = cc.instantiate(cannonPrefab);
+        //     this.node.addChild(this._animation);
+        //     this._animation.setPosition(0, this._animation.getContentSize().height / 2);
+        //     switch (this._seatId) {
+        //         case 0:
+        //             this.node.setPosition(0, - cc.view.getVisibleSize().height / 2);
+        //             break;
+        //         case 1:
+        //             this.node.setPosition(- cc.view.getVisibleSize().width / 2, 0);
+        //             break;
+        //         case 2:
+        //             this.node.setPosition(0, cc.view.getVisibleSize().height / 2);
+        //             break;
+        //         case 3:
+        //             this.node.setPosition(cc.view.getVisibleSize().width / 2, 0);
+        //             break;
+        //         default:
+        //             break;
+        //     }
+        //     this.changeRotation(cc.view.getVisibleSize().width / 2, cc.view.getVisibleSize().height / 2);
+        // });
+        this._animation = cc.instantiate(this.cannonPrefabs[this._level - 1]);
+        this.node.addChild(this._animation);
+        this._animation.setPosition(0, this._animation.getContentSize().height / 2);
+        switch (this._seatId) {
+            case 0:
+                this.node.setPosition(0, - cc.view.getVisibleSize().height / 2);
+                break;
+            case 1:
+                this.node.setPosition(- cc.view.getVisibleSize().width / 2, 0);
+                break;
+            case 2:
+                this.node.setPosition(0, cc.view.getVisibleSize().height / 2);
+                break;
+            case 3:
+                this.node.setPosition(cc.view.getVisibleSize().width / 2, 0);
+                break;
+            default:
+                break;
+        }
+        this.changeRotation(cc.view.getVisibleSize().width / 2, cc.view.getVisibleSize().height / 2);
     },
 
     startShot () {
@@ -95,7 +116,6 @@ cc.Class({
             bulletNode.getComponent('Bullet').initBullet(this._level, this.node.rotation);
             bulletNode.zIndex = 90;
             let nodePos = this.node.getPosition();
-            let cannonPos = this._animation.getPosition();
             let cannonLength = this._animation.getContentSize().height;
             let angle = this.node.rotation;
             let dx = cannonLength * Math.sin(angle / 180 * Math.PI);

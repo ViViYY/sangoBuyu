@@ -113,20 +113,6 @@ cc.Class({
         console.log('te = ' + te);
         // cc.director.getCollisionManager().enabledDebugDraw = false;
     },
-    _conflictMethod() {
-        console.log('conflict here')
-        const a = 1
-        console.log(a + 1)
-    },
-    _anotherConflickFunc() {
-        console.log('should cause conflict here.')
-    },
-
-    ff () {
-        this._conflictMethod();
-        let a = 1;
-        console.log('a = '  +  a);
-    },
 
     _loadBackground () {
         let url = 'Image/game_bg';
@@ -206,13 +192,13 @@ cc.Class({
         let fishMap = {};
         for(let i = 0; i < fishData.length; i++){
             let fish = fishData[i];
-            fishMap[fish.id] = fish;
+            fishMap[fish.fid] = fish;
         }
         for(let i = 0; i < this._fishList.length; i++){
             let fishNode = this._fishList[i];
-            let _fishData = fishMap[fishNode.getComponent('FishNode').id];
+            let _fishData = fishMap[fishNode.getComponent('FishNode').fid];
             if(!_fishData){
-                console.warn(' refreshData err, fishId: ' + fishNode.getComponent('FishNode').id);
+                console.warn(' refreshData err, fishId: ' + fishNode.getComponent('FishNode').fid);
             } else {
                 fishNode.getComponent('FishNode').syncData(_fishData.step);
             }

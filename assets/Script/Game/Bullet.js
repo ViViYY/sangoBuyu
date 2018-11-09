@@ -5,6 +5,7 @@ cc.Class({
     extends: cc.Component,
 
     properties: {
+        bulletPrefabs: [cc.Prefab],
         _level: {
             type: cc.Integer,
             default: 1,
