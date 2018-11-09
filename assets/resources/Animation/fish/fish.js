@@ -10,7 +10,7 @@ cc.Class({
     },
 
     captureEnd () {
-
+        this.node.parent.getComponent('FishNode').captureEnd();
     },
 
 
