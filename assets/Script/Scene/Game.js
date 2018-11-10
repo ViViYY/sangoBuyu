@@ -112,14 +112,14 @@ cc.Class({
             //bg
             this._refreshBackgroundRotation();
 
-            console.log('my seat id = ' + mySeatId);
+            // console.log('my seat id = ' + mySeatId);
             //确定其他玩家的位置
             for(let i = 0; i < roomPlayerList.length; i++){
                 let player_room = roomPlayerList[i];
                 let cannonSeatId = player_room.seatId;
-                console.log('player seat id = ' + cannonSeatId);
+                // console.log('player seat id = ' + cannonSeatId);
                 let finalSeatId = SeatMap[mySeatId][cannonSeatId];
-                console.log('final seat id = ' + finalSeatId);
+                // console.log('final seat id = ' + finalSeatId);
                 this._loadCannon(player_room.uid, player_room.nickname, player_room.level, finalSeatId);
             }
             let roomFishList = data.fishList;

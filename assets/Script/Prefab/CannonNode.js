@@ -117,14 +117,11 @@ cc.Class({
         this._animation.getComponent(cc.Animation).play('cannon' + this._level);
     },
 
-    //正常逻辑是要在炮筒播放完动画之后才发射炮弹
-    //考虑到延迟造成的炮弹丢失
-    //直接发射炮弹
     otherPlayerShotPlay (rotation) {
         // console.log('otherPlayerShotPlay');
         //rotation
         //刷新炮弹的 角度
-        console.log('otherPlayerShotPlay : ' + rotation);
+        // console.log('otherPlayerShotPlay : ' + rotation);
         switch (this._seatId) {
             case 0:
                 this.cannonNode.rotation = rotation;

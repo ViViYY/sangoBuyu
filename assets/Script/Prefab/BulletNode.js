@@ -5,7 +5,6 @@ cc.Class({
     extends: cc.Component,
 
     properties: {
-        bulletPrefabs: [cc.Prefab],
         _level: {
             type: cc.Integer,
             default: 1,
@@ -20,7 +19,7 @@ cc.Class({
         },
         _bulletSpeed: {
             type: cc.Integer,
-            default: 235,
+            default: 400,
         },
         _sprite: {
             type: cc.Sprite,
@@ -38,16 +37,9 @@ cc.Class({
     },
 
     initBullet (level, angle) {
-        if(this.logOpen) console.log(' initBullet ');
         this._level = level;
-        let url = 'Atlas/bullet';
-        Global.ResourcesManager.loadList([url], Define.resourceType.CCSpriteAtlas, () => {
-            let atlas = Global.ResourcesManager.getRes(url);
-            this._sprite = this.addComponent(cc.Sprite);
-            this._sprite.spriteFrame = atlas.getSpriteFrame('bullet' + this._level);
-            this.node.rotation = angle;
-        });
-
+        if(this.logOpen) console.log(' initBullet ' + this._level);
+        this.node.rotation = angle;
     },
 
     startMove () {

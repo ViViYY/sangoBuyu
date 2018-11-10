@@ -1,0 +1,49 @@
+{
+  "__type__": "cc.AnimationClip",
+  "_name": "capture",
+  "_objFlags": 0,
+  "_native": "",
+  "_duration": 0.5166666666666667,
+  "sample": 60,
+  "speed": 1,
+  "wrapMode": 1,
+  "curveData": {
+    "comps": {
+      "cc.Sprite": {
+        "spriteFrame": [
+          {
+            "frame": 0,
+            "value": {
+              "__uuid__": "ec2003b5-46f1-44ed-ab4f-3e13ac090771"
+            }
+          },
+          {
+            "frame": 0.16666666666666666,
+            "value": {
+              "__uuid__": "e78394e4-5e49-481e-ae5d-f9bbf2535ac1"
+            }
+          },
+          {
+            "frame": 0.3333333333333333,
+            "value": {
+              "__uuid__": "df703f93-d5ec-4e0c-909e-a2ed84d4064e"
+            }
+          },
+          {
+            "frame": 0.5,
+            "value": {
+              "__uuid__": "55e069be-2668-4d9a-a175-41ca3b978d1d"
+            }
+          }
+        ]
+      }
+    }
+  },
+  "events": [
+    {
+      "frame": 0.5,
+      "func": "captureEnd",
+      "params": []
+    }
+  ]
+}
