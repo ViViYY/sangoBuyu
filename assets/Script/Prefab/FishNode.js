@@ -93,16 +93,34 @@ cc.Class({
         if(!this._initSuccess){
             return;
         }
+        let mySeatId = Global.GameData.getPlayer().seatId;
         let objPos = this._pathPoints[this._step];
         let pos = cc.v2(objPos[0] + cc.view.getVisibleSize().width / 2, objPos[1] + cc.view.getVisibleSize().height / 2);
         let temp = cc.v2(pos.x, pos.y);
-        temp.x -= cc.view.getVisibleSize().width / 2;
-        temp.y -= cc.view.getVisibleSize().height / 2;
+        const frameSize = cc.view.getFrameSize();
+        temp.x -= frameSize.width / 2;
+        temp.y -= frameSize.height / 2;
+        //刷新鱼的方位 角度
+        switch (mySeatId) {
+            case 0:
+                this.node.rotation = objPos[2];
+                break;
+            case 1:
+                temp.x = - temp.x;
+                this.node.rotation = 180 - objPos[2];
+                break;
+            case 2:
+                temp.y = - temp.y;
+                this.node.rotation = -objPos[2];
+                break;
+            case 3:
+                temp.x = - temp.x;
+                temp.y = - temp.y;
+                this.node.rotation = objPos[2] - 180;
+                break;
+        }
         this.node.setPosition(temp);
-        //角度
-        let posCur = this.node.getPosition();
-        this.node.rotation = objPos[2];
-        this._posPre = posCur;
+
     },
 
     playAnimation (actionName) {

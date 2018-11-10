@@ -2,6 +2,9 @@ import Global from "../Global";
 import Define from './../Define'
 import ButtonSimpleStype from "../Util/ButtonSimpleStyle";
 
+
+const SeatMap = [[0, 1, 2, 3], [1, 0, 3, 2], [2, 3, 0, 1], [3, 2, 1, 0]];
+
 cc.Class({
     extends: cc.Component,
 
@@ -73,7 +76,7 @@ cc.Class({
             // console.log(JSON.stringify(this._fishPath));
         });
         cc.director.getCollisionManager().enabled = true;
-        cc.director.getCollisionManager().enabledDebugDraw = true;
+        // cc.director.getCollisionManager().enabledDebugDraw = true;
         this._loadBackground();
     },
 
@@ -85,16 +88,39 @@ cc.Class({
             } else {
                 console.log('Game:onPlayerJoinRoom:' + JSON.stringify(data.data));
                 let player_add = data.data;
-                this._loadCannon(player_add.uid, player_add.level, player_add.seatId);
+                const mySeatId = Global.GameData.getPlayer().seatId;
+                let cannonSeatId = player_add.seatId;
+                console.log('player seat id = ' + cannonSeatId);
+                let finalSeatId = SeatMap[mySeatId][cannonSeatId];
+                console.log('final seat id = ' + finalSeatId);
+                this._loadCannon(player_add.uid, player_add.nickname, player_add.level, finalSeatId);
             }
         });
         //初始化房间数据
         Global.SocketController.askRoomData((err, data) => {
             console.log('askRoomData:' + JSON.stringify(data));
             let roomPlayerList = data.playerList;
+            //确定我的seatId
             for(let i = 0; i < roomPlayerList.length; i++){
                 let player_room = roomPlayerList[i];
-                this._loadCannon(player_room.uid, player_room.level, player_room.seatId);
+                if(player_room.uid === Global.GameData.getPlayer().uid){
+                    Global.GameData.getPlayer().seatId = player_room.seatId;
+                    break;
+                }
+            }
+            let mySeatId = Global.GameData.getPlayer().seatId;
+            //bg
+            this._refreshBackgroundRotation();
+
+            console.log('my seat id = ' + mySeatId);
+            //确定其他玩家的位置
+            for(let i = 0; i < roomPlayerList.length; i++){
+                let player_room = roomPlayerList[i];
+                let cannonSeatId = player_room.seatId;
+                console.log('player seat id = ' + cannonSeatId);
+                let finalSeatId = SeatMap[mySeatId][cannonSeatId];
+                console.log('final seat id = ' + finalSeatId);
+                this._loadCannon(player_room.uid, player_room.nickname, player_room.level, finalSeatId);
             }
             let roomFishList = data.fishList;
             for(let i = 0; i < roomFishList.length; i++){
@@ -162,7 +188,30 @@ cc.Class({
         Global.SocketController.offPlayerExitRoom();
         cc.director.getCollisionManager().enabled = false;
         cc.director.off('shot');
-        cc.director.getCollisionManager().enabledDebugDraw = false;
+        // cc.director.getCollisionManager().enabledDebugDraw = false;
+    },
+
+    //刷新地图方位
+    _refreshBackgroundRotation () {
+        let mySeatId = Global.GameData.getPlayer().seatId;
+        switch (mySeatId) {
+            case 0:
+                this._bgNode.scaleX = 1;
+                this._bgNode.scaleY = 1;
+                break;
+            case 1:
+                this._bgNode.scaleX = -1;
+                this._bgNode.scaleY = 1;
+                break;
+            case 2:
+                this._bgNode.scaleX = 1;
+                this._bgNode.scaleY = -1;
+                break;
+            case 3:
+                this._bgNode.scaleX = -1;
+                this._bgNode.scaleY = -1;
+                break;
+        }
     },
 
     _loadBackground () {
@@ -175,7 +224,6 @@ cc.Class({
             bg.spriteFrame = obj;
             this._bgNode.scaleX = this.sx;
             this._bgNode.scaleY = this.sy;
-            //bg.node.scale = 1;
 
             let cameraNode = this.node.getChildByName('Main Camera');
             // this.node.runAction(cc.rotateBy(5, 45, 45));
@@ -212,13 +260,13 @@ cc.Class({
         });
     },
 
-    _loadCannon (_uid, _level, _seatId) {
+    _loadCannon (_uid, _nickname, _level, _seatId) {
         let url = 'Prefab/cannonNode';
         Global.ResourcesManager.loadList([url], Define.resourceType.CCPrefab, () => {
             let cannonNodePrefab = Global.ResourcesManager.getRes(url);
             let cannonNode = cc.instantiate(cannonNodePrefab);
             this.node.addChild(cannonNode);
-            cannonNode.getComponent('CannonNode').initCannon(_uid, _level, _seatId);
+            cannonNode.getComponent('CannonNode').initCannon(_uid, _nickname, _level, _seatId);
             this._cannonList.push(cannonNode);
             if(_uid == Global.GameData.player.uid){
                 this._cannonNode = cannonNode;

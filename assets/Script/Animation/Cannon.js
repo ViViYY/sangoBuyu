@@ -6,7 +6,7 @@ cc.Class({
     },
 
     shotEnd() {
-        this.node.parent.getComponent('CannonNode').shotEnd();
+        this.node.parent.parent.getComponent('CannonNode').shotEnd();
     },
 
 });

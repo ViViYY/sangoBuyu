@@ -23,7 +23,7 @@ const SocketController = function () {
             let _msg = data.msg;
             let _callbackIndex = data.callbackIndex;
             let _data = data.data;
-            if(_msg != 'syncGameData' && _msg != 'fishCreate'){
+            if(_msg != 'syncGameData' && _msg != 'fishCreate' && _msg != 'player_shot'){
                 console.log(' get server msg = ' + _msg + ', callbackIndex =  ' + _callbackIndex + ' , data =  ' + JSON.stringify(_data));
             }
             _event.fire(_msg, _data);
@@ -48,7 +48,7 @@ const SocketController = function () {
             console.log('重新连接成功');
         });
     };
-    const notify = function (msg, data, cb, noLog) {
+    const notify = function (msg, data, noLog) {
         if(!noLog) console.log(' notify to server msg = ' + msg + ', callbackIndex =  ' + _callbackIndex + ' , data =  ' + JSON.stringify(data));
         _socket.emit('notify', {msg:msg, callbackIndex:_callbackIndex, data:data});
         _callbackIndex++;
