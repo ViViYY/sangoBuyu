@@ -21,4 +21,6 @@ Define.webLifeTime = 300;
 Define.bulletTag = 0;
 Define.fishTag = 1;
 
+Define.cannonCost = 4;
+
 export default Define;

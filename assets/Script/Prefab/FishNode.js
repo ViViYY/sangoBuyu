@@ -61,13 +61,20 @@ cc.Class({
             type: cc.ProgressBar,
             default: null,
         },
+        _isDead: false,
+        isDead: {
+            get () {return this._isDead;},
+            visible: false,
+        },
     },
 
     onLoad () {
+        this._isDead = false;
         this.logOpen = false;
         this.hpBar.node.zIndex = 200;
     },
     onDestroy () {
+        // console.log('fish onDestroy');
         // this.node.removeAllActions();
     },
 
@@ -140,7 +147,7 @@ cc.Class({
             const bulletUId = other.node.getComponent('BulletNode').uid;
             const fishId = self.node.parent.getComponent('FishNode').fid;
             let webNode = cc.instantiate(this.webNodePrefab);
-            webNode.getComponent('WebNode').init(bulletLevel);
+            webNode.getComponent('WebNode').init(bulletLevel - 1);
             let p_bullet = other.node.getPosition();
             let p_fish = self.node.parent.getPosition();
             webNode.setPosition(p_bullet.x - p_fish.x, p_bullet.y - p_fish.y);
@@ -155,16 +162,29 @@ cc.Class({
         }
     },
 
-    beHit (hp, maxHp) {
-        this.hpBar.progress = hp / maxHp;
-    },
-
     fishDestroy () {
+        // console.log('[FishNode]fishDestroy:      1    ' + this._animation.__classname__);
+        if(this._isDead){
+            return;
+        }
+        // console.log('[FishNode]fishDestroy:      2    ');
+        this._isDead = true;
+        // console.log('[FishNode]fishDestroy:' + this._fid);
+        if(this._animation){
+            // console.log('[FishNode]fishDestroy:      3    ');
+            this._animation.getComponent(cc.Animation).stop();
+            let bc = this._animation.getComponent(cc.BoxCollider);
+            bc.destroy();
+            this._animation.destroy();
+            this._animation = null;
+        }
         this.node.destroy();
     },
 
     moveEnd () {
-        this.playAnimation('move');
+        if(!this._isDead){
+            this.playAnimation('move');
+        }
     },
 
     captureEnd () {

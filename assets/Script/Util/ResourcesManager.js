@@ -45,8 +45,13 @@ const ResourcesManager = function () {
             //资源存在
             if(that.resources[resPath]){
                 if(logOpen) console.log(' ResourceManager load res exist path: ' + resPath + ' , type: ' + that.resources[resPath].__classname__ );
-                if(cb){
-                    cb();
+                _loadCount++;
+                if(_loadCount == pathList.length){
+                    if(logOpen) console.log(' 全部资源加载完毕 ');
+                    if(cb){
+                        cb();
+                        return;
+                    }
                 }
             }
             // 资源不存在，需要加载

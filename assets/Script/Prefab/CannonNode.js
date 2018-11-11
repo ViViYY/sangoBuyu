@@ -16,6 +16,14 @@ cc.Class({
             type: cc.Label,
             default: null,
         },
+        labelCoin: {
+            type: cc.Label,
+            default: null,
+        },
+        headbg: {
+            type: cc.Sprite,
+            default: null,
+        },
         _animation: {
             type: cc.Animation,
             default: null,
@@ -35,6 +43,14 @@ cc.Class({
             set (value) {this._level = value;},
             get () {return this._level;},
         },
+        _silver: {
+            type: cc.Integer,
+            default: 0,
+        },
+        silver: {
+            set (value) {this._silver = value;},
+            get () {return this._silver;},
+        },
         _seatId: {
             default: 0,
         },
@@ -49,7 +65,7 @@ cc.Class({
 
     },
 
-    initCannon (uid, nickname, level, seatId) {
+    initCannon (uid, nickname, silver, level, seatId) {
         this.labelName.string = nickname;
         if(0 === seatId){
             this.labelName.node.color = cc.Color.GREEN;
@@ -57,16 +73,18 @@ cc.Class({
             this.labelName.node.color = cc.Color.WHITE;
         }
         if(seatId === 0){
-            this.labelName.node.setPosition(53, 19);
+            this.headbg.node.setPosition(-130, 70);
         } else if (seatId === 1) {
-            this.labelName.node.setPosition(-53, 19);
+            this.headbg.node.setPosition(130, 70);
         } else if (seatId === 2) {
-            this.labelName.node.setPosition(53, -19);
+            this.headbg.node.setPosition(-130, -70);
         } else if (seatId === 3) {
-            this.labelName.node.setPosition(-53, -19);
+            this.headbg.node.setPosition(130, -70);
         }
         this._uid = uid;
         this._level = level;
+        this._silver = silver;
+        this.labelCoin.string = this._silver;
         this._seatId = seatId;
         this.node.zIndex = 500;
         this._animation = cc.instantiate(this.cannonPrefabs[this._level - 1]);
@@ -111,6 +129,11 @@ cc.Class({
 
     shotPlay () {
         if(this._isShotting){
+            return;
+        }
+        //silver是否足够
+        if(this._silver < Define.cannonCost){
+            console.log('金币不足');
             return;
         }
         this._isShotting = true;
@@ -171,17 +194,24 @@ cc.Class({
             //send-notification-'shot'
             cc.director.emit('shot', this.cannonNode.rotation);
         }
+        //消耗coin
+        this._costCoin();
+    },
+
+    _costCoin () {
+        this._silver -= Define.cannonCost;
+        this.labelCoin.string = this._silver;
     },
 
     award (silver, gold, pos) {
-        console.log('silver = ' + silver);
-        console.log('gold = ' + gold);
+        // console.log('silver = ' + silver);
+        // console.log('gold = ' + gold);
         //silver
         let coinSilverTenNumber = Math.floor(silver / 200);
         let coinSilverOneNumber = Math.floor((gold - coinSilverTenNumber * 200) / 10);
         coinSilverOneNumber = Math.max(0, coinSilverOneNumber);
-        console.log('coinSilverTenNumber = ' + coinSilverTenNumber);
-        console.log('coinSilverOneNumber = ' + coinSilverOneNumber);
+        // console.log('coinSilverTenNumber = ' + coinSilverTenNumber);
+        // console.log('coinSilverOneNumber = ' + coinSilverOneNumber);
         for(let i = 0; i < coinSilverTenNumber; i++){
             this._createCoin('get_coin_10', pos, 1000);
         }
@@ -192,15 +222,16 @@ cc.Class({
         let coinGoldTenNumber = Math.floor(gold / 200);
         let coinGoldOneNumber = Math.floor((gold - coinGoldTenNumber * 200) / 10);
         coinGoldOneNumber = Math.max(0, coinGoldOneNumber);
-        console.log('coinGoldTenNumber = ' + coinGoldTenNumber);
-        console.log('coinGoldOneNumber = ' + coinGoldOneNumber);
+        // console.log('coinGoldTenNumber = ' + coinGoldTenNumber);
+        // console.log('coinGoldOneNumber = ' + coinGoldOneNumber);
         for(let i = 0; i < coinGoldTenNumber; i++){
             this._createCoin('get_rmb_10', pos, 1100);
         }
         for(let i = 0; i < coinGoldOneNumber; i++){
             this._createCoin('get_rmb_1', pos, 1099);
         }
-
+        this._silver += silver;
+        this.labelCoin.string = this._silver;
     },
     _createCoin (coinName, pos, zIndex) {
         const dd = 20;
@@ -215,7 +246,10 @@ cc.Class({
         awardNode.setScale(0.6, 0.6);
         this.node.parent.addChild(awardNode);
         // action
-        let action = cc.moveTo(1, this.node.getPosition());
+        let targetPos = this.node.getPosition();
+        targetPos.x += this.headbg.node.x;
+        targetPos.y += this.headbg.node.y;
+        let action = cc.moveTo(1, targetPos);
         let delay = cc.delayTime(Math.random() * 0.5 + 0.5);
         let seq = cc.sequence(delay, action, cc.callFunc( () => {
             awardNode.destroy();

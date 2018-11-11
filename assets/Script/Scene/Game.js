@@ -93,7 +93,7 @@ cc.Class({
                 console.log('player seat id = ' + cannonSeatId);
                 let finalSeatId = SeatMap[mySeatId][cannonSeatId];
                 console.log('final seat id = ' + finalSeatId);
-                this._loadCannon(player_add.uid, player_add.nickname, player_add.level, finalSeatId);
+                this._loadCannon(player_add.uid, player_add.nickname, player_add.silver, player_add.level, finalSeatId);
             }
         });
         //初始化房间数据
@@ -120,7 +120,7 @@ cc.Class({
                 // console.log('player seat id = ' + cannonSeatId);
                 let finalSeatId = SeatMap[mySeatId][cannonSeatId];
                 // console.log('final seat id = ' + finalSeatId);
-                this._loadCannon(player_room.uid, player_room.nickname, player_room.level, finalSeatId);
+                this._loadCannon(player_room.uid, player_room.nickname, player_room.silver, player_room.level, finalSeatId);
             }
             let roomFishList = data.fishList;
             for(let i = 0; i < roomFishList.length; i++){
@@ -131,7 +131,7 @@ cc.Class({
         //新增鱼
         Global.SocketController.onFishCreate( (data) => {
             let fishData = data.data.fishData;
-            // console.log('onFishCreate, fishData:' + JSON.stringify(fishData));
+            console.log('onFishCreate, fishData:' + JSON.stringify(fishData));
             this.createFish(fishData);
         });
         //同步帧数据
@@ -173,40 +173,40 @@ cc.Class({
         });
         //get-notification-'shot'
         cc.director.on('shot', function (data) {
-            Global.SocketController.playerShot(data,  () => {
-
+            Global.SocketController.playerShot(data,  (err, data) => {
+                if(err){
+                    console.warn('[Game]playerShot : err : ' + err);
+                }
             })
         });
         //击杀鱼
-        Global.SocketController.onKillFish( (data) => {
-            console.log('onKillFish:' + JSON.stringify(data));
-            const _data = data.data;
-            let index = -1;
-            let fishDead = null;
-            for(let i = 0; i < this._fishList.length; i++){
-                let fish = this._fishList[i];
-                if(fish.getComponent('FishNode').fid === _data.fid){
-                    index = i;
-                    fishDead = fish;
-                    break;
-                }
-            }
-            if(index != -1){
-                this._fishList.splice(index, 1);
-                fishDead.getComponent('FishNode').fishDestroy();
-                for (let i = 0; i < this._cannonList.length; i++) {
-                    const cannon = this._cannonList[i];
-                    // console.log(i + ':' + otherCannon.getComponent('CannonNode').uid);
-                    const ouid = cannon.getComponent('CannonNode').uid;
-                    // console.log('otherPlayerShotPlay' + shotData.shotter);
-                    if(ouid === _data.killer){
-                        cannon.getComponent('CannonNode').award(_data.silver, _data.gold, fishDead.getPosition());
-                    }
-                }
-            } else {
-                console.warn(' onKillFish err, fishId: ' + _data.fid);
-            }
-        });
+        // Global.SocketController.onKillFish( (data) => {
+        //     console.log('onKillFishonKillFishonKillFishonKillFish:' + JSON.stringify(data));
+        //     const _data = data.data;
+        //     let index = -1;
+        //     let fishDead = null;
+        //     for(let i = 0; i < this._fishList.length; i++){
+        //         let fish = this._fishList[i];
+        //         if(fish.getComponent('FishNode').fid === _data.fid){
+        //             index = i;
+        //             fishDead = fish;
+        //             break;
+        //         }
+        //     }
+        //     if(index != -1){
+        //         this._fishList.splice(index, 1);
+        //         fishDead.getComponent('FishNode').fishDestroy();
+        //         for (let i = 0; i < this._cannonList.length; i++) {
+        //             const cannon = this._cannonList[i];
+        //             const ouid = cannon.getComponent('CannonNode').uid;
+        //             if(ouid === _data.killer){
+        //                 cannon.getComponent('CannonNode').award(_data.silver, _data.gold, fishDead.getPosition());
+        //             }
+        //         }
+        //     } else {
+        //         console.warn(' onKillFish err, fishId: ' + _data.fid);
+        //     }
+        // });
         //玩家升级
         Global.SocketController.onLevelUp( (data) => {
             console.log('onLevelUp:' + JSON.stringify(data));
@@ -220,7 +220,7 @@ cc.Class({
         Global.SocketController.offSyncGameData();
         Global.SocketController.offPlayerShot();
         Global.SocketController.offPlayerExitRoom();
-        Global.SocketController.offKillFish();
+        // Global.SocketController.offKillFish();
         Global.SocketController.offLevelUp();
         cc.director.getCollisionManager().enabled = false;
         cc.director.off('shot');
@@ -298,13 +298,13 @@ cc.Class({
         });
     },
 
-    _loadCannon (_uid, _nickname, _level, _seatId) {
+    _loadCannon (_uid, _nickname, _silver, _level, _seatId) {
         let url = 'Prefab/cannonNode';
         Global.ResourcesManager.loadList([url], Define.resourceType.CCPrefab, () => {
             let cannonNodePrefab = Global.ResourcesManager.getRes(url);
             let cannonNode = cc.instantiate(cannonNodePrefab);
             this.node.addChild(cannonNode);
-            cannonNode.getComponent('CannonNode').initCannon(_uid, _nickname, _level, _seatId);
+            cannonNode.getComponent('CannonNode').initCannon(_uid, _nickname, _silver, _level, _seatId);
             this._cannonList.push(cannonNode);
             if(_uid == Global.GameData.player.uid){
                 this._cannonNode = cannonNode;
@@ -319,7 +319,6 @@ cc.Class({
             let fishNodePrefab = Global.ResourcesManager.getRes(url);
             let fishNode = cc.instantiate(fishNodePrefab);
             this._fishList.push(fishNode);
-            // fishNode.setPosition(-100, -100);
             fishNode.zIndex = 80;
             fishNode.getComponent('FishNode').initFish(fishData);
             this.node.addChild(fishNode);
@@ -329,19 +328,65 @@ cc.Class({
     refreshData (fishData) {
         // console.log('onSyncGameData, fishData:' + JSON.stringify(fishData));
         let fishMap = {};
+        let deadIndexList = [];
+        let serverFishNumber = fishData.length;
+        let localFishNumber = this._fishList.length;
+        let deadFishNumber = 0;
         for(let i = 0; i < fishData.length; i++){
             let fish = fishData[i];
             fishMap[fish.fid] = fish;
+            if(fish.hp === 0){
+                deadFishNumber++;
+            }
         }
+        let print = false;
+        if(deadFishNumber > 0){
+            print = true;
+        }
+        if(print) console.log('------------------------onSyncGameData------------------------');
+        if(print) console.log('serverFishNumber = ' + serverFishNumber);
+        if(print) console.log('localFishNumber = ' + localFishNumber);
+        if(print) console.log('deadFishNumber = ' + deadFishNumber);
+
+
         for(let i = 0; i < this._fishList.length; i++){
             let fishNode = this._fishList[i];
             let _fishData = fishMap[fishNode.getComponent('FishNode').fid];
             if(!_fishData){
+                console.log('onSyncGameData 1, fishData:' + JSON.stringify(fishData));
                 console.warn(' refreshData err, fishId: ' + fishNode.getComponent('FishNode').fid);
             } else {
-                fishNode.getComponent('FishNode').syncData(_fishData.step, _fishData.hp, _fishData.maxHp);
+                if(_fishData.hp === 0){
+                    console.log('remove dead fish fid = ' + _fishData.fid);
+                    console.log('remove dead fish index = ' + i);
+                    deadIndexList.push(i);
+                    fishNode.getComponent('FishNode').fishDestroy();
+                    //移除cannon
+                    for (let i = 0; i < this._cannonList.length; i++) {
+                        const cannon = this._cannonList[i];
+                        const ouid = cannon.getComponent('CannonNode').uid;
+                        if(ouid === _fishData.killer){
+                            cannon.getComponent('CannonNode').award(_fishData.silver, _fishData.gold, fishNode.getPosition());
+                        }
+                    }
+                } else {
+                    fishNode.getComponent('FishNode').syncData(_fishData.step, _fishData.hp, _fishData.maxHp);
+                }
             }
         }
+        //死鱼移除队列
+        if(deadIndexList.length > 0){
+            console.log('onSyncGameData 2, fishData:' + JSON.stringify(fishData));
+            for(let i = 0; i < deadIndexList.length; i++){
+                let index = deadIndexList[i];
+                console.log('死鱼移除队列  index = ' + index);
+                let fishNode = this._fishList[index];
+                console.warn(' 死鱼移除队列, fishId: ' + fishNode.getComponent('FishNode').fid);
+                this._fishList.splice(index, 1);
+            }
+        }
+        let localFishNumber2 = this._fishList.length;
+        if(print) console.log('localFishNumber2 = ' + localFishNumber2);
     },
 
 });
