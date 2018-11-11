@@ -91,7 +91,7 @@ const SocketController = function () {
         _event.off('player_shot', cb);
     };
     that.hitFish = function (fishId, cb) {
-        request('hit_fish', {fishId:fishId}, cb);
+        request('hit_fish', {fishId:fishId}, cb, true);
     };
     that.onKillFish = function (cb) {
         _event.on('kill_fish', cb);

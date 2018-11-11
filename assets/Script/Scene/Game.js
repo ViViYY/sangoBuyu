@@ -194,6 +194,17 @@ cc.Class({
             if(index != -1){
                 this._fishList.splice(index, 1);
                 fishDead.getComponent('FishNode').fishDestroy();
+                for (let i = 0; i < this._cannonList.length; i++) {
+                    const cannon = this._cannonList[i];
+                    // console.log(i + ':' + otherCannon.getComponent('CannonNode').uid);
+                    const ouid = cannon.getComponent('CannonNode').uid;
+                    // console.log('otherPlayerShotPlay' + shotData.shotter);
+                    if(ouid === _data.killer){
+                        cannon.getComponent('CannonNode').award(_data.silver, _data.gold, fishDead.getPosition());
+                    }
+                }
+            } else {
+                console.warn(' onKillFish err, fishId: ' + _data.fid);
             }
         });
         //玩家升级
@@ -303,7 +314,8 @@ cc.Class({
 
     createFish (fishData) {
         let url = 'Prefab/fishNode';
-        Global.ResourcesManager.loadList([url], Define.resourceType.CCPrefab, () => {
+        let urlAward = 'Animation/award/award';
+        Global.ResourcesManager.loadList([url, urlAward], Define.resourceType.CCPrefab, () => {
             let fishNodePrefab = Global.ResourcesManager.getRes(url);
             let fishNode = cc.instantiate(fishNodePrefab);
             this._fishList.push(fishNode);

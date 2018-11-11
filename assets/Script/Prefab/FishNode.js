@@ -65,7 +65,7 @@ cc.Class({
 
     onLoad () {
         this.logOpen = false;
-        this.hpBar.node.zIndex = 100;
+        this.hpBar.node.zIndex = 200;
     },
     onDestroy () {
         // this.node.removeAllActions();

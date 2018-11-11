@@ -68,7 +68,7 @@ cc.Class({
         this._uid = uid;
         this._level = level;
         this._seatId = seatId;
-        this.node.zIndex = 100;
+        this.node.zIndex = 500;
         this._animation = cc.instantiate(this.cannonPrefabs[this._level - 1]);
         this.cannonNode.addChild(this._animation);
         this._animation.setPosition(0, this._animation.getContentSize().height / 2);
@@ -171,6 +171,56 @@ cc.Class({
             //send-notification-'shot'
             cc.director.emit('shot', this.cannonNode.rotation);
         }
+    },
+
+    award (silver, gold, pos) {
+        console.log('silver = ' + silver);
+        console.log('gold = ' + gold);
+        //silver
+        let coinSilverTenNumber = Math.floor(silver / 200);
+        let coinSilverOneNumber = Math.floor((gold - coinSilverTenNumber * 200) / 10);
+        coinSilverOneNumber = Math.max(0, coinSilverOneNumber);
+        console.log('coinSilverTenNumber = ' + coinSilverTenNumber);
+        console.log('coinSilverOneNumber = ' + coinSilverOneNumber);
+        for(let i = 0; i < coinSilverTenNumber; i++){
+            this._createCoin('get_coin_10', pos, 1000);
+        }
+        for(let i = 0; i < coinSilverOneNumber + 3; i++){
+            this._createCoin('get_coin_1', pos, 999);
+        }
+        //gold
+        let coinGoldTenNumber = Math.floor(gold / 200);
+        let coinGoldOneNumber = Math.floor((gold - coinGoldTenNumber * 200) / 10);
+        coinGoldOneNumber = Math.max(0, coinGoldOneNumber);
+        console.log('coinGoldTenNumber = ' + coinGoldTenNumber);
+        console.log('coinGoldOneNumber = ' + coinGoldOneNumber);
+        for(let i = 0; i < coinGoldTenNumber; i++){
+            this._createCoin('get_rmb_10', pos, 1100);
+        }
+        for(let i = 0; i < coinGoldOneNumber; i++){
+            this._createCoin('get_rmb_1', pos, 1099);
+        }
+
+    },
+    _createCoin (coinName, pos, zIndex) {
+        const dd = 20;
+        pos.x += Math.random() * dd * 2 - dd;
+        pos.y += Math.random() * dd * 2 - dd;
+        let urlAward = 'Animation/award/award';
+        let awardPrefab = Global.ResourcesManager.getRes(urlAward);
+        let awardNode = cc.instantiate(awardPrefab);
+        awardNode.setPosition(pos.x, pos.y);
+        awardNode.getComponent(cc.Animation).play(coinName);
+        awardNode.zIndex = zIndex;
+        awardNode.setScale(0.6, 0.6);
+        this.node.parent.addChild(awardNode);
+        // action
+        let action = cc.moveTo(1, this.node.getPosition());
+        let delay = cc.delayTime(Math.random() * 0.5 + 0.5);
+        let seq = cc.sequence(delay, action, cc.callFunc( () => {
+            awardNode.destroy();
+        }));
+        awardNode.runAction(seq);
     },
 
 
