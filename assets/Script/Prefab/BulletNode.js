@@ -10,12 +10,16 @@ cc.Class({
             default: 1,
         },
         level: {
-            set (value) {
-                this._level = value;
-            },
-            get () {
-                return this._level;
-            },
+            set (value) {this._level = value;},
+            get () {return this._level;},
+        },
+        _uid: {
+            type: cc.Integer,
+            default: -1,
+        },
+        uid: {
+            set (value) {this._uid = value;},
+            get () {return this._uid;},
         },
         _bulletSpeed: {
             type: cc.Integer,
@@ -36,7 +40,8 @@ cc.Class({
         // console.log('bullet onDestroy');
     },
 
-    initBullet (level, angle) {
+    initBullet (uid, level, angle) {
+        this._uid = uid;
         this._level = level;
         if(this.logOpen) console.log(' initBullet ' + this._level);
         this.node.rotation = angle;

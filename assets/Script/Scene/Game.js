@@ -177,6 +177,29 @@ cc.Class({
 
             })
         });
+        //击杀鱼
+        Global.SocketController.onKillFish( (data) => {
+            console.log('onKillFish:' + JSON.stringify(data));
+            const _data = data.data;
+            let index = -1;
+            let fishDead = null;
+            for(let i = 0; i < this._fishList.length; i++){
+                let fish = this._fishList[i];
+                if(fish.getComponent('FishNode').fid === _data.fid){
+                    index = i;
+                    fishDead = fish;
+                    break;
+                }
+            }
+            if(index != -1){
+                this._fishList.splice(index, 1);
+                fishDead.getComponent('FishNode').fishDestroy();
+            }
+        });
+        //玩家升级
+        Global.SocketController.onLevelUp( (data) => {
+            console.log('onLevelUp:' + JSON.stringify(data));
+        });
     },
     onDestroy () {
         console.log('Game Scene onDestroy');
@@ -186,6 +209,8 @@ cc.Class({
         Global.SocketController.offSyncGameData();
         Global.SocketController.offPlayerShot();
         Global.SocketController.offPlayerExitRoom();
+        Global.SocketController.offKillFish();
+        Global.SocketController.offLevelUp();
         cc.director.getCollisionManager().enabled = false;
         cc.director.off('shot');
         // cc.director.getCollisionManager().enabledDebugDraw = false;
@@ -194,24 +219,26 @@ cc.Class({
     //刷新地图方位
     _refreshBackgroundRotation () {
         let mySeatId = Global.GameData.getPlayer().seatId;
+
         switch (mySeatId) {
             case 0:
-                this._bgNode.scaleX = 1;
-                this._bgNode.scaleY = 1;
+                this._bgNode.scaleX = 1 * this.sx;
+                this._bgNode.scaleY = 1 * this.sy;
                 break;
             case 1:
-                this._bgNode.scaleX = -1;
-                this._bgNode.scaleY = 1;
+                this._bgNode.scaleX = -1 * this.sx;
+                this._bgNode.scaleY = 1 * this.sy;
                 break;
             case 2:
-                this._bgNode.scaleX = 1;
-                this._bgNode.scaleY = -1;
+                this._bgNode.scaleX = 1 * this.sx;
+                this._bgNode.scaleY = -1 * this.sy;
                 break;
             case 3:
-                this._bgNode.scaleX = -1;
-                this._bgNode.scaleY = -1;
+                this._bgNode.scaleX = -1 * this.sx;
+                this._bgNode.scaleY = -1 * this.sy;
                 break;
         }
+
     },
 
     _loadBackground () {
@@ -222,8 +249,8 @@ cc.Class({
             let bg = this._bgNode.addComponent(cc.Sprite);
             var obj = Global.ResourcesManager.getRes(url);
             bg.spriteFrame = obj;
-            this._bgNode.scaleX = this.sx;
-            this._bgNode.scaleY = this.sy;
+            // this._bgNode.scaleX = this.sx;
+            // this._bgNode.scaleY = this.sy;
 
             let cameraNode = this.node.getChildByName('Main Camera');
             // this.node.runAction(cc.rotateBy(5, 45, 45));
@@ -300,7 +327,7 @@ cc.Class({
             if(!_fishData){
                 console.warn(' refreshData err, fishId: ' + fishNode.getComponent('FishNode').fid);
             } else {
-                fishNode.getComponent('FishNode').syncData(_fishData.step);
+                fishNode.getComponent('FishNode').syncData(_fishData.step, _fishData.hp, _fishData.maxHp);
             }
         }
     },

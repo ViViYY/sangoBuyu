@@ -18,7 +18,25 @@ cc.Class({
         },
     },
 
+    _showInfo () {
+        const visibleSize = cc.view.getVisibleSize();
+        const frameSize = cc.view.getFrameSize();
+        const designSize = cc.view.getDesignResolutionSize();
+        const canvasSize = cc.view.getCanvasSize();
+        const windowSize = cc.winSize;
+        if(cc.sys.platform == cc.sys.ANDROID){
+            jsb.reflection.callStaticMethod("org/cocos2dx/javascript/AppActivity", "print", "(Ljava/lang/String;II)V", "visibleSize", visibleSize.width, visibleSize.height);
+            jsb.reflection.callStaticMethod("org/cocos2dx/javascript/AppActivity", "print", "(Ljava/lang/String;II)V", "frameSize", frameSize.width, frameSize.height);
+            jsb.reflection.callStaticMethod("org/cocos2dx/javascript/AppActivity", "print", "(Ljava/lang/String;II)V", "designSize", designSize.width, designSize.height);
+            jsb.reflection.callStaticMethod("org/cocos2dx/javascript/AppActivity", "print", "(Ljava/lang/String;II)V", "canvasSize", canvasSize.width, canvasSize.height);
+            jsb.reflection.callStaticMethod("org/cocos2dx/javascript/AppActivity", "print", "(Ljava/lang/String;II)V", "windowSize", windowSize.width, windowSize.height);
+        }
+
+
+    },
+
     onLoad () {
+        this._showInfo();
         this.sx = 1;
         this.sy = 1;
         let frameSize = cc.view.getFrameSize();
@@ -71,7 +89,6 @@ cc.Class({
     _loadButton () {
         Global.ComponentFactory.createButtonByAtlas('Prefab/buttonSimple', (buttonPrefab) => {
             var button = cc.instantiate(buttonPrefab);
-            console.log('aaaa 1');
             this.node.getChildByName('loginNode').addChild(button);
             button.setPosition(0, -160);
             // 按钮样式

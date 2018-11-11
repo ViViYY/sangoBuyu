@@ -18,7 +18,7 @@ cc.Class({
         this.level = level;
         this.getComponent(cc.Sprite).spriteFrame = this.webList[this.level];
         setTimeout( () => {
-            this.node.destroy();
+            if(this && this.node)this.node.destroy();
         }, Define.webLifeTime);
     },
 

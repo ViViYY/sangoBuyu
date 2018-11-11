@@ -90,6 +90,21 @@ const SocketController = function () {
     that.offPlayerShot = function (cb) {
         _event.off('player_shot', cb);
     };
+    that.hitFish = function (fishId, cb) {
+        request('hit_fish', {fishId:fishId}, cb);
+    };
+    that.onKillFish = function (cb) {
+        _event.on('kill_fish', cb);
+    };
+    that.offKillFish = function (cb) {
+        _event.off('kill_fish', cb);
+    };
+    that.onLevelUp = function (cb) {
+        _event.on('level_up', cb);
+    };
+    that.offLevelUp = function (cb) {
+        _event.off('level_up', cb);
+    };
 
 
     that.onPlayerJoinRoom = function (cb) {

@@ -41,8 +41,8 @@
     },
     "_scale": {
       "__type__": "cc.Vec3",
-      "x": 0.6184895833333334,
-      "y": 0.6184895833333334,
+      "x": 0.58984375,
+      "y": 0.58984375,
       "z": 1
     },
     "_quat": {
@@ -222,7 +222,7 @@
       "height": 768
     },
     "_fitWidth": false,
-    "_fitHeight": true,
+    "_fitHeight": false,
     "_id": "83ODlgH5FHG5lpeMpGw/of"
   },
   {
@@ -238,7 +238,6 @@
     "_cannonLevel": 1,
     "_cannonList": [],
     "_fishList": [],
-    "_fishPath": [],
     "_id": "7cSxTt8JtF0ZhULAXyUoU/"
   }
 ]

@@ -72,19 +72,19 @@ cc.Class({
         this._animation = cc.instantiate(this.cannonPrefabs[this._level - 1]);
         this.cannonNode.addChild(this._animation);
         this._animation.setPosition(0, this._animation.getContentSize().height / 2);
-        const frameSize = cc.view.getFrameSize();
+        const visibleSize = cc.view.getVisibleSize();
         switch (this._seatId) {
             case 0:
-                this.node.setPosition(-Define.cannonDxToCenter, -frameSize.height / 2);
+                this.node.setPosition(-Define.cannonDxToCenter, -visibleSize.height / 2);
                 break;
             case 1:
-                this.node.setPosition(Define.cannonDxToCenter, -frameSize.height / 2);
+                this.node.setPosition(Define.cannonDxToCenter, -visibleSize.height / 2);
                 break;
             case 2:
-                this.node.setPosition(-Define.cannonDxToCenter, frameSize.height / 2);
+                this.node.setPosition(-Define.cannonDxToCenter, visibleSize.height / 2);
                 break;
             case 3:
-                this.node.setPosition(Define.cannonDxToCenter, frameSize.height / 2);
+                this.node.setPosition(Define.cannonDxToCenter, visibleSize.height / 2);
                 break;
             default:
                 break;
@@ -157,7 +157,7 @@ cc.Class({
     shot () {
         let bulletNode = cc.instantiate(this.bulletPrefabs[this._level - 1]);
         this.node.parent.addChild(bulletNode);
-        bulletNode.getComponent('BulletNode').initBullet(this._level, this.cannonNode.rotation);
+        bulletNode.getComponent('BulletNode').initBullet(this._uid, this._level, this.cannonNode.rotation);
         bulletNode.zIndex = 90;
         let nodePos = this.node.getPosition();
         let cannonLength = this._animation.getContentSize().height;

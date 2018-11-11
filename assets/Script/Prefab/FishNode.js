@@ -57,10 +57,15 @@ cc.Class({
             default: cc.v2(0, 0),
         },
         // _initSuccess: false,
+        hpBar: {
+            type: cc.ProgressBar,
+            default: null,
+        },
     },
 
     onLoad () {
         this.logOpen = false;
+        this.hpBar.node.zIndex = 100;
     },
     onDestroy () {
         // this.node.removeAllActions();
@@ -85,9 +90,10 @@ cc.Class({
         this._pathPoints = Global.FishPathManager.getPath(this._pathIndex);
     },
 
-    syncData (step) {
+    syncData (step, hp, maxHp) {
         this._step = step;
         this._refreshPosition();
+        this.hpBar.progress = hp / maxHp;
     },
 
     _refreshPosition () {
@@ -98,26 +104,26 @@ cc.Class({
         let objPos = this._pathPoints[this._step];
         let pos = cc.v2(objPos[0] + cc.view.getVisibleSize().width / 2, objPos[1] + cc.view.getVisibleSize().height / 2);
         let temp = cc.v2(pos.x, pos.y);
-        const frameSize = cc.view.getFrameSize();
-        temp.x -= frameSize.width / 2;
-        temp.y -= frameSize.height / 2;
+        const visibleSize = cc.view.getVisibleSize();
+        temp.x -= visibleSize.width / 2;
+        temp.y -= visibleSize.height / 2;
         //刷新鱼的方位 角度
         switch (mySeatId) {
             case 0:
-                this.node.rotation = objPos[2];
+                this._animation.rotation = objPos[2];
                 break;
             case 1:
                 temp.x = - temp.x;
-                this.node.rotation = 180 - objPos[2];
+                this._animation.rotation = 180 - objPos[2];
                 break;
             case 2:
                 temp.y = - temp.y;
-                this.node.rotation = -objPos[2];
+                this._animation.rotation = -objPos[2];
                 break;
             case 3:
                 temp.x = - temp.x;
                 temp.y = - temp.y;
-                this.node.rotation = objPos[2] - 180;
+                this._animation.rotation = objPos[2] - 180;
                 break;
         }
         this.node.setPosition(temp);
@@ -130,14 +136,31 @@ cc.Class({
     onCollisionEnter (other, self) {
         if(Define.ColliderType.Fish === self.tag && Define.ColliderType.Bullet === other.tag){
             if(this.logOpen) console.log('[fish]onCollisionEnter:other:' + other.name + ' - self:' + self.name);
-            let bulletLevel = other.node.getComponent('BulletNode').level;
+            const bulletLevel = other.node.getComponent('BulletNode').level;
+            const bulletUId = other.node.getComponent('BulletNode').uid;
+            const fishId = self.node.parent.getComponent('FishNode').fid;
             let webNode = cc.instantiate(this.webNodePrefab);
             webNode.getComponent('WebNode').init(bulletLevel);
             let p_bullet = other.node.getPosition();
             let p_fish = self.node.parent.getPosition();
             webNode.setPosition(p_bullet.x - p_fish.x, p_bullet.y - p_fish.y);
             this.node.addChild(webNode);
+
+            if(bulletUId === Global.GameData.getPlayer().uid){
+                Global.SocketController.hitFish(fishId,  (err, data) => {
+
+                });
+            }
+
         }
+    },
+
+    beHit (hp, maxHp) {
+        this.hpBar.progress = hp / maxHp;
+    },
+
+    fishDestroy () {
+        this.node.destroy();
     },
 
     moveEnd () {
