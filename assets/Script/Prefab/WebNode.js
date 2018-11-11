@@ -14,6 +14,10 @@ cc.Class({
         },
     },
 
+    onDestroy () {
+        // console.log('WebNode onDestroy');
+    },
+
     init (level) {
         this.level = level;
         this.getComponent(cc.Sprite).spriteFrame = this.webList[this.level];

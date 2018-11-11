@@ -93,12 +93,6 @@ const SocketController = function () {
     that.hitFish = function (fishId, cb) {
         request('hit_fish', {fishId:fishId}, cb, true);
     };
-    that.onKillFish = function (cb) {
-        _event.on('kill_fish', cb);
-    };
-    that.offKillFish = function (cb) {
-        _event.off('kill_fish', cb);
-    };
     that.onLevelUp = function (cb) {
         _event.on('level_up', cb);
     };

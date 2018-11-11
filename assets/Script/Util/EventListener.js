@@ -14,7 +14,7 @@ const EventListener = function (obj) {
             }
         }
         Register[type].push(method);
-        console.log(' EventListener on method type = ' + type);
+        // console.log(' EventListener on method type = ' + type);
     };
     obj.fire = function (type, data) {
         if(Register.hasOwnProperty(type)){
@@ -34,7 +34,7 @@ const EventListener = function (obj) {
         if (Register.hasOwnProperty(type)){
             var handlerList = Register[type];
             handlerList.length = 0;
-            console.log(' EventListener off method type = ' + type);
+            // console.log(' EventListener off method type = ' + type);
             // for (var i = 0 ; i < handlerList.length ; i ++){
             //     if (handlerList[i] === method){
             //         handlerList.splice(i , 1);

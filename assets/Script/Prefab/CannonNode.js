@@ -65,6 +65,10 @@ cc.Class({
 
     },
 
+    onDestroy () {
+        // console.log('CannonNode onDestroy');
+    },
+
     initCannon (uid, nickname, silver, level, seatId) {
         this.labelName.string = nickname;
         if(0 === seatId){
@@ -201,6 +205,17 @@ cc.Class({
     _costCoin () {
         this._silver -= Define.cannonCost;
         this.labelCoin.string = this._silver;
+    },
+
+    levelUp (level) {
+        // console.log('[Cannon]levelUp: level : ' + level);
+        this._level = level;
+        this._animation.destroy();
+        this._animation = null;
+        this._animation = cc.instantiate(this.cannonPrefabs[this._level - 1]);
+        this.cannonNode.addChild(this._animation);
+        this._animation.setPosition(0, this._animation.getContentSize().height / 2);
+        this._isShotting = false;
     },
 
     award (silver, gold, pos) {

@@ -74,8 +74,7 @@ cc.Class({
         this.hpBar.node.zIndex = 200;
     },
     onDestroy () {
-        // console.log('fish onDestroy');
-        // this.node.removeAllActions();
+        // console.log('FishNode onDestroy');
     },
 
     initFish (fishData) {
