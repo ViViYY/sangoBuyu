@@ -161,19 +161,31 @@ cc.Class({
         }
     },
 
-    fishDestroy () {
-        // console.log('[FishNode]fishDestroy:      1    ' + this._animation.__classname__);
+    fishKilled () {
         if(this._isDead){
             return;
         }
-        // console.log('[FishNode]fishDestroy:      2    ');
+        let bc = this._animation.getComponent(cc.BoxCollider);
+        bc.destroy();
+        this.hpBar.progress = 0;
         this._isDead = true;
+        this.playAnimation('capture');
+    },
+
+    captureEnd () {
+        this._fishDestroy();
+    },
+
+    _fishDestroy () {
+        // console.log('[FishNode]fishDestroy:      1    ' + this._animation.__classname__);
+        if(!this._isDead){
+            return;
+        }
+        // console.log('[FishNode]fishDestroy:      2    ');
         // console.log('[FishNode]fishDestroy:' + this._fid);
         if(this._animation){
             // console.log('[FishNode]fishDestroy:      3    ');
             this._animation.getComponent(cc.Animation).stop();
-            let bc = this._animation.getComponent(cc.BoxCollider);
-            bc.destroy();
             this._animation.destroy();
             this._animation = null;
         }
@@ -186,8 +198,5 @@ cc.Class({
         }
     },
 
-    captureEnd () {
-
-    },
 
 });

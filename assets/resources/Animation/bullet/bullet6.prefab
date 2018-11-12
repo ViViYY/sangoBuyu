@@ -85,9 +85,9 @@
       "__id__": 1
     },
     "_enabled": true,
-    "bulletPrefabs": [],
     "_level": 6,
-    "_bulletSpeed": 180,
+    "_uid": -1,
+    "speed": 800,
     "_sprite": null,
     "_id": ""
   },

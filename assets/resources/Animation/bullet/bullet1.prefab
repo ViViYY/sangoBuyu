@@ -85,9 +85,9 @@
       "__id__": 1
     },
     "_enabled": true,
-    "bulletPrefabs": [],
     "_level": 1,
-    "_bulletSpeed": 180,
+    "_uid": -1,
+    "speed": 300,
     "_sprite": null,
     "_id": ""
   },
@@ -135,7 +135,7 @@
     },
     "_fillStart": 0,
     "_fillRange": 0,
-    "_isTrimmedMode": true,
+    "_isTrimmedMode": false,
     "_state": 0,
     "_atlas": {
       "__uuid__": "fe925e2f-f4d4-4634-ae3e-737c92685314"

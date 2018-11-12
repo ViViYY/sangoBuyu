@@ -386,8 +386,8 @@ cc.Class({
                     if(print) console.log('remove dead fish fid = ' + _fishData.fid);
                     if(print) console.log('remove dead fish index = ' + i);
                     deadIndexList.push(i);
-                    fishNode.getComponent('FishNode').fishDestroy();
-                    //移除cannon
+                    fishNode.getComponent('FishNode').fishKilled();
+                    //cannon
                     for (let i = 0; i < this._cannonList.length; i++) {
                         const cannon = this._cannonList[i];
                         const ouid = cannon.getComponent('CannonNode').uid;
