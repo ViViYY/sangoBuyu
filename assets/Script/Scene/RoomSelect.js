@@ -24,16 +24,34 @@ cc.Class({
     onLoad () {
         this.sx = 1;
         this.sy = 1;
-        let frameSize = cc.view.getFrameSize();
+        let visibleSize;
+        if(cc.sys.platform == cc.sys.ANDROID){
+            visibleSize = cc.view.getFrameSize();
+        } else if(cc.sys.platform == cc.sys.IPHONE){
+            visibleSize = cc.view.getFrameSize();
+        } else if(cc.sys.platform == cc.sys.WECHAT_GAME){
+            visibleSize = cc.view.getCanvasSize();
+        } else if(cc.sys.isBrowser){
+            visibleSize = cc.view.getCanvasSize();
+        } else {
+            visibleSize = cc.view.getVisibleSize();
+        }
         let designSize = cc.view.getDesignResolutionSize();
         let p1 = designSize.width / designSize.height;
-        let p2 = frameSize.width / frameSize.height;
+        let p2 = visibleSize.width / visibleSize.height;
         cc.view.setDesignResolutionSize(designSize.width, designSize.height, cc.ResolutionPolicy.SHOW_ALL);
+        //真实运行环境比较宽
         if(p1 < p2){
-            this.sx = frameSize.width / designSize.width;
+            this.sx = visibleSize.width / (visibleSize.height / designSize.height * designSize.width);
         } else {
-            this.sy = frameSize.height / designSize.height;
+            this.sy = visibleSize.height / (visibleSize.width / designSize.width * designSize.height);
         }
+        console.log('visibleSize = ' + visibleSize);
+        console.log('designSize = ' + designSize);
+        console.log('p1 = ' + p1);
+        console.log('p2 = ' + p2);
+        console.log("this.sx:" + this.sx);
+        console.log("this.sy:" + this.sy);
 
         this._loadBackground();
         cc.sys.garbageCollect();

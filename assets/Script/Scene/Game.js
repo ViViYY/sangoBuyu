@@ -9,6 +9,14 @@ cc.Class({
     extends: cc.Component,
 
     properties: {
+        bgLayer: {
+            type: cc.Node,
+            default: null,
+        },
+        topLayer: {
+            type: cc.Node,
+            default: null,
+        },
         _bgNode: {
             type: cc.Node,
             default: null,
@@ -28,17 +36,34 @@ cc.Class({
     onLoad () {
         this.sx = 1;
         this.sy = 1;
-        let frameSize = cc.view.getFrameSize();
+        let visibleSize;
+        if(cc.sys.platform == cc.sys.ANDROID){
+            visibleSize = cc.view.getFrameSize();
+        } else if(cc.sys.platform == cc.sys.WECHAT_GAME){
+            visibleSize = cc.view.getCanvasSize();
+        } else if(cc.sys.isBrowser){
+            visibleSize = cc.view.getCanvasSize();
+        } else {
+            visibleSize = cc.view.getVisibleSize();
+        }
         let designSize = cc.view.getDesignResolutionSize();
         let p1 = designSize.width / designSize.height;
-        let p2 = frameSize.width / frameSize.height;
+        let p2 = visibleSize.width / visibleSize.height;
         cc.view.setDesignResolutionSize(designSize.width, designSize.height, cc.ResolutionPolicy.SHOW_ALL);
+        //真实运行环境比较宽
         if(p1 < p2){
-            this.sx = frameSize.width / designSize.width;
+            this.sx = visibleSize.width / (visibleSize.height / designSize.height * designSize.width);
         } else {
-            this.sy = frameSize.height / designSize.height;
+            this.sy = visibleSize.height / (visibleSize.width / designSize.width * designSize.height);
         }
-
+        console.log('visibleSize = ' + visibleSize);
+        console.log('designSize = ' + designSize);
+        console.log('p1 = ' + p1);
+        console.log('p2 = ' + p2);
+        console.log("this.sx:" + this.sx);
+        console.log("this.sy:" + this.sy);
+        this.topLayer.width = visibleSize.width;
+        this.topLayer.height = visibleSize.width;
         this.node.on(cc.Node.EventType.TOUCH_START, (event) => {
             if(this._cannonNode){
                 this._cannonNode.getComponent('CannonNode').changeRotation(event.touch.getLocation().x, event.touch.getLocation().y);
@@ -208,22 +233,24 @@ cc.Class({
     _refreshBackgroundRotation () {
         let mySeatId = Global.GameData.getPlayer().seatId;
 
+        this.bgLayer.scaleX = this.sx;
+        this.bgLayer.scaleY = this.sy;
         switch (mySeatId) {
             case 0:
-                this._bgNode.scaleX = 1 * this.sx;
-                this._bgNode.scaleY = 1 * this.sy;
+                this._bgNode.scaleX = 1;
+                this._bgNode.scaleY = 1;
                 break;
             case 1:
-                this._bgNode.scaleX = -1 * this.sx;
-                this._bgNode.scaleY = 1 * this.sy;
+                this._bgNode.scaleX = -1;
+                this._bgNode.scaleY = 1;
                 break;
             case 2:
-                this._bgNode.scaleX = 1 * this.sx;
-                this._bgNode.scaleY = -1 * this.sy;
+                this._bgNode.scaleX = 1;
+                this._bgNode.scaleY = -1;
                 break;
             case 3:
-                this._bgNode.scaleX = -1 * this.sx;
-                this._bgNode.scaleY = -1 * this.sy;
+                this._bgNode.scaleX = -1;
+                this._bgNode.scaleY = -1;
                 break;
         }
 
@@ -246,24 +273,31 @@ cc.Class({
 
     _loadBackground () {
         let url = 'Image/game_bg';
+        let visibleSize = cc.view.getVisibleSize();
+        let winSize = cc.view.getFrameSize();
+        if(cc.sys.platform == cc.sys.ANDROID){
+            winSize = cc.view.getFrameSize();
+        } else if(cc.sys.platform == cc.sys.IPHONE){
+            winSize = cc.view.getFrameSize();
+        } else if(cc.sys.platform == cc.sys.WECHAT_GAME){
+            winSize = cc.view.getCanvasSize();
+        } else if(cc.sys.platform == cc.sys.MOBILE_BROWSER){
+            winSize = cc.view.getCanvasSize();
+        } else {
+            winSize = cc.view.getFrameSize();
+        }
         Global.ResourcesManager.loadList([url], Define.resourceType.CCSpriteFrame, () => {
             this._bgNode = new cc.Node('gamebg');
-            this.node.addChild(this._bgNode);
+            this.bgLayer.addChild(this._bgNode);
             let bg = this._bgNode.addComponent(cc.Sprite);
             var obj = Global.ResourcesManager.getRes(url);
             bg.spriteFrame = obj;
-            // this._bgNode.scaleX = this.sx;
-            // this._bgNode.scaleY = this.sy;
-
-            let cameraNode = this.node.getChildByName('Main Camera');
-            // this.node.runAction(cc.rotateBy(5, 45, 45));
-            //this.node.rotation = 45;
 
             Global.ComponentFactory.createButtonByAtlas('Prefab/buttonSimple', (buttonPrefab) => {
                 // 返回按钮
                 var buttonBack = cc.instantiate(buttonPrefab);
-                this.node.addChild(buttonBack);
-                buttonBack.setPosition(buttonBack.getContentSize().width / 2 - cc.view.getFrameSize().width / 2, cc.view.getFrameSize().height / 2 - buttonBack.getContentSize().height / 2);
+                this.topLayer.addChild(buttonBack);
+                buttonBack.setPosition( (- visibleSize.width / 2 + buttonBack.getContentSize().width / 2) * this.sx, (visibleSize.height / 2 - buttonBack.getContentSize().height / 2) * this.sy);
                 // 按钮样式
                 buttonBack.getComponent('ButtonSimple').changeStyle(ButtonSimpleStype.BACK);
                 // 设置文本
@@ -295,7 +329,7 @@ cc.Class({
         Global.ResourcesManager.loadList([url], Define.resourceType.CCPrefab, () => {
             let cannonNodePrefab = Global.ResourcesManager.getRes(url);
             let cannonNode = cc.instantiate(cannonNodePrefab);
-            this.node.addChild(cannonNode);
+            this.bgLayer.addChild(cannonNode);
             cannonNode.getComponent('CannonNode').initCannon(_uid, _nickname, _silver, _level, _seatId);
             this._cannonList.push(cannonNode);
             if(_uid == Global.GameData.player.uid){
@@ -313,7 +347,7 @@ cc.Class({
             this._fishList.push(fishNode);
             fishNode.zIndex = 80;
             fishNode.getComponent('FishNode').initFish(fishData);
-            this.node.addChild(fishNode);
+            this.bgLayer.addChild(fishNode);
         });
     },
 

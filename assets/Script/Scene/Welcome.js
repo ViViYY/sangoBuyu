@@ -2,7 +2,7 @@ import Global from './../Global'
 import ButtonSimpleStype from './../Util/ButtonSimpleStyle'
 import Define from './../Define'
 
-//window.io = require('src/assets/Script/Lib/socket.io');
+// window.io = require('src/assets/Script/Lib/socket.io.7fa61.js');
 
 cc.Class({
     extends: cc.Component,
@@ -24,12 +24,22 @@ cc.Class({
         const designSize = cc.view.getDesignResolutionSize();
         const canvasSize = cc.view.getCanvasSize();
         const windowSize = cc.winSize;
+        console.log('cc.sys.platform = ' + cc.sys.platform);
+        console.log('cc.sys.isBrowser = ' + cc.sys.isBrowser);
         if(cc.sys.platform == cc.sys.ANDROID){
             jsb.reflection.callStaticMethod("org/cocos2dx/javascript/AppActivity", "print", "(Ljava/lang/String;II)V", "visibleSize", visibleSize.width, visibleSize.height);
             jsb.reflection.callStaticMethod("org/cocos2dx/javascript/AppActivity", "print", "(Ljava/lang/String;II)V", "frameSize", frameSize.width, frameSize.height);
             jsb.reflection.callStaticMethod("org/cocos2dx/javascript/AppActivity", "print", "(Ljava/lang/String;II)V", "designSize", designSize.width, designSize.height);
             jsb.reflection.callStaticMethod("org/cocos2dx/javascript/AppActivity", "print", "(Ljava/lang/String;II)V", "canvasSize", canvasSize.width, canvasSize.height);
             jsb.reflection.callStaticMethod("org/cocos2dx/javascript/AppActivity", "print", "(Ljava/lang/String;II)V", "windowSize", windowSize.width, windowSize.height);
+        } else if(cc.sys.platform == cc.sys.WECHAT_GAME){
+
+        } else {
+            console.log("visibleSize:" + visibleSize.width + ' - ' + visibleSize.height);
+            console.log("frameSize:" + frameSize.width + ' - ' + frameSize.height);
+            console.log("designSize:" + designSize.width + ' - ' + designSize.height);
+            console.log("canvasSize:" + canvasSize.width + ' - ' + canvasSize.height);
+            console.log("windowSize:" + windowSize.width + ' - ' + windowSize.height);
         }
 
 
@@ -39,16 +49,34 @@ cc.Class({
         this._showInfo();
         this.sx = 1;
         this.sy = 1;
-        let frameSize = cc.view.getFrameSize();
+        let visibleSize;
+        if(cc.sys.platform == cc.sys.ANDROID){
+            visibleSize = cc.view.getFrameSize();
+        } else if(cc.sys.platform == cc.sys.IPHONE){
+            visibleSize = cc.view.getFrameSize();
+        } else if(cc.sys.platform == cc.sys.WECHAT_GAME){
+            visibleSize = cc.view.getCanvasSize();
+        } else if(cc.sys.isBrowser){
+            visibleSize = cc.view.getCanvasSize();
+        } else {
+            visibleSize = cc.view.getVisibleSize();
+        }
         let designSize = cc.view.getDesignResolutionSize();
         let p1 = designSize.width / designSize.height;
-        let p2 = frameSize.width / frameSize.height;
+        let p2 = visibleSize.width / visibleSize.height;
+        console.log('visibleSize = ' + visibleSize);
+        console.log('designSize = ' + designSize);
         cc.view.setDesignResolutionSize(designSize.width, designSize.height, cc.ResolutionPolicy.SHOW_ALL);
+        //真实运行环境比较宽
         if(p1 < p2){
-            this.sx = frameSize.width / designSize.width;
+            this.sx = visibleSize.width / (visibleSize.height / designSize.height * designSize.width);
         } else {
-            this.sy = frameSize.height / designSize.height;
+            this.sy = visibleSize.height / (visibleSize.width / designSize.width * designSize.height);
         }
+        console.log("p1:" + p1);
+        console.log("p2:" + p2);
+        console.log("this.sx:" + this.sx);
+        console.log("this.sy:" + this.sy);
 
         cc.director.on('connect_Success', this._connectServerSuccess, this);
         // 已经登陆过
