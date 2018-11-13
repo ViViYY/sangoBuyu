@@ -108,11 +108,8 @@ cc.Class({
         }
         let mySeatId = Global.GameData.getPlayer().seatId;
         let objPos = this._pathPoints[this._step];
-        let pos = cc.v2(objPos[0] + cc.view.getVisibleSize().width / 2, objPos[1] + cc.view.getVisibleSize().height / 2);
+        let pos = cc.v2(objPos[0], objPos[1]);
         let temp = cc.v2(pos.x, pos.y);
-        const visibleSize = cc.view.getVisibleSize();
-        temp.x -= visibleSize.width / 2;
-        temp.y -= visibleSize.height / 2;
         //刷新鱼的方位 角度
         switch (mySeatId) {
             case 0:
@@ -133,7 +130,6 @@ cc.Class({
                 break;
         }
         this.node.setPosition(temp);
-
     },
 
     playAnimation (actionName) {

@@ -33,8 +33,6 @@ cc.Class({
     },
 
     onDestroy () {
-        cc.systemEvent.off(cc.SystemEvent.EventType.KEY_DOWN, this._onKeyPressed, this);
-        cc.systemEvent.off(cc.SystemEvent.EventType.KEY_UP, this._onKeyRelease, this);
     },
 
 });

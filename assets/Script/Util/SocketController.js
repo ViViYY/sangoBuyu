@@ -15,6 +15,7 @@ const SocketController = function () {
         }
         _socketInit = true;
         _socket = io(Define.serverUrl);
+        console.log('请求连接服务器');
         _socket.on('welcome', function () {
             console.log('server welcome');
             cc.director.emit('connect_Success');

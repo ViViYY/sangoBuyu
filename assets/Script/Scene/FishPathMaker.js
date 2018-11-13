@@ -5,7 +5,7 @@ cc.Class({
     extends: cc.Component,
 
     properties: {
-        _animationNode: {
+        animationNode: {
             type: cc.Node,
             default: null,
         },
@@ -13,107 +13,154 @@ cc.Class({
             type: cc.Animation,
             default: null,
         },
-        p1: {type: cc.EditBox, default: null,},
-        p2: {type: cc.EditBox, default: null,},
-        p3: {type: cc.EditBox, default: null,},
-        p4: {type: cc.EditBox, default: null,},
-        p5: {type: cc.EditBox, default: null,},
-        p6: {type: cc.EditBox, default: null,},
-        p11: {type: cc.EditBox, default: null,},
-        p12: {type: cc.EditBox, default: null,},
-        p13: {type: cc.EditBox, default: null,},
-        p14: {type: cc.EditBox, default: null,},
-        p15: {type: cc.EditBox, default: null,},
-        p16: {type: cc.EditBox, default: null,},
-        d1: {type: cc.Sprite, default: null,},
-        d2: {type: cc.Sprite, default: null,},
-        d3:{type: cc.Sprite, default: null,},
-        d4: {type: cc.Sprite, default: null,},
-        d5: {type: cc.Sprite, default: null,},
-        d6:{type: cc.Sprite, default: null,},
+        list: [cc.Sprite],
         _posPre: cc.v2(0, 0),
         isMoving: false,
 
         _pathPos: [],
         _pathIndex: 0,
         _pathPoints: [],
+        labelStartDir: {
+            type: cc.Label,
+            default: null,
+        },
+        labelEndDir: {
+            type: cc.Label,
+            default: null,
+        },
     },
 
 
     onLoad () {
         Global.FishPathManager.loadPath( () => {
-            this._pathPoints = Global.FishPathManager.getPath(1);
+            this._pathPoints = Global.FishPathManager.getPath(10);
             this._init();
         });
     },
 
     _init () {
-        this.createFish();
-        cc.director.on('move-position', (index) => {
-            switch (index) {
-                case 1:
-                    this.p1.string = this.d1.node.getPosition().x;
-                    this.p2.string = this.d1.node.getPosition().y;
-                    break;
-                case 2:
-                    this.p3.string = this.d2.node.getPosition().x;
-                    this.p4.string = this.d2.node.getPosition().y;
-                    break;
-                case 3:
-                    this.p5.string = this.d3.node.getPosition().x;
-                    this.p6.string = this.d3.node.getPosition().y;
-                    break;
-                case 4:
-                    this.p11.string = this.d4.node.getPosition().x;
-                    this.p12.string = this.d4.node.getPosition().y;
-                    break;
-                case 5:
-                    this.p13.string = this.d5.node.getPosition().x;
-                    this.p14.string = this.d5.node.getPosition().y;
-                    break;
-                case 6:
-                    this.p15.string = this.d6.node.getPosition().x;
-                    this.p16.string = this.d6.node.getPosition().y;
-                    break;
-            }
-            this._animationNode.setPosition(cc.v2(Number(this.p1.string), Number(this.p2.string)));
+        this._startDir = 3;
+        this._endDir = 1;
+        cc.director.on('move-position', () => {
+            let fistPointPos = this._getListPosition(0);
+            this._animation.setPosition(fistPointPos);
+            this._refreshDirection();
+            this._forceStartAndEnd();
         });
-        this.p1.string = this.d1.node.getPosition().x;
-        this.p2.string = this.d1.node.getPosition().y;
-        this.p3.string = this.d2.node.getPosition().x;
-        this.p4.string = this.d2.node.getPosition().y;
-        this.p5.string = this.d3.node.getPosition().x;
-        this.p6.string = this.d3.node.getPosition().y;
-        this.p11.string = this.d4.node.getPosition().x;
-        this.p12.string = this.d4.node.getPosition().y;
-        this.p13.string = this.d5.node.getPosition().x;
-        this.p14.string = this.d5.node.getPosition().y;
-        this.p15.string = this.d6.node.getPosition().x;
-        this.p16.string = this.d6.node.getPosition().y;
+        this.createFish();
     },
 
     funcStart (event, customData) {
-        let p1 = this.node.getChildByName('p1').getComponent(cc.EditBox);
-        let p2 = this.node.getChildByName('p2').getComponent(cc.EditBox);
-        let p3 = this.node.getChildByName('p3').getComponent(cc.EditBox);
-        let p4 = this.node.getChildByName('p4').getComponent(cc.EditBox);
-        let p5 = this.node.getChildByName('p5').getComponent(cc.EditBox);
-        let p6 = this.node.getChildByName('p6').getComponent(cc.EditBox);
-        let p11 = this.node.getChildByName('p11').getComponent(cc.EditBox);
-        let p12 = this.node.getChildByName('p12').getComponent(cc.EditBox);
-        let p13 = this.node.getChildByName('p13').getComponent(cc.EditBox);
-        let p14 = this.node.getChildByName('p14').getComponent(cc.EditBox);
-        let p15 = this.node.getChildByName('p15').getComponent(cc.EditBox);
-        let p16 = this.node.getChildByName('p16').getComponent(cc.EditBox);
 
-        this.moveRandomBezier(p1.string, p2.string, p3.string, p4.string, p5.string, p6.string,
-                              p11.string, p12.string, p13.string, p14.string, p15.string, p16.string);
+        this.moveRandomBezier();
+    },
+
+    funcStartDir () {
+        this._startDir++;
+        if(4 === this._startDir){
+            this._startDir = 0;
+        }
+        this._refreshDirection();
+        this._forceStartAndEnd();
+    },
+
+    funcEndDir () {
+        this._endDir++;
+        if(4 === this._endDir){
+            this._endDir = 0;
+        }
+        this._refreshDirection();
+        this._forceStartAndEnd();
+    },
+
+    _refreshDirection () {
+        this.labelStartDir.string = 'startDirection:';
+        this.labelEndDir.string = 'endDirection:';
+        switch (this._startDir) {
+            case 0 :
+                this.labelStartDir.string += ':up';
+                break;
+            case 1 :
+                this.labelStartDir.string += ':right';
+                break;
+            case 2 :
+                this.labelStartDir.string += ':down';
+                break;
+            case 3 :
+                this.labelStartDir.string += ':left';
+                break;
+            default:
+                break;
+        }
+        switch (this._endDir) {
+            case 0 :
+                this.labelEndDir.string += ':up';
+                break;
+            case 1 :
+                this.labelEndDir.string += ':right';
+                break;
+            case 2 :
+                this.labelEndDir.string += ':down';
+                break;
+            case 3 :
+                this.labelEndDir.string += ':left';
+                break;
+            default:
+                break;
+        }
+    },
+
+    _forceStartAndEnd () {
+        const dxy = 300;
+        let start = this.list[0];
+        let fist = this.list[1];
+        let last = this.list[this.list.length - 2];
+        let end = this.list[this.list.length - 1];
+        start.node.setPosition(fist.node.getPosition().x, fist.node.getPosition().y);
+        end.node.setPosition(last.node.getPosition().x, last.node.getPosition().y);
+        switch (this._startDir) {
+            case 0 :
+                start.node.y += dxy;
+                break;
+            case 1 :
+                start.node.x += dxy;
+                break;
+            case 2 :
+                start.node.y -= dxy;
+                break;
+            case 3 :
+                start.node.x -= dxy;
+                break;
+            default:
+                break;
+        }
+        switch (this._endDir) {
+            case 0 :
+                end.node.y += dxy;
+                break;
+            case 1 :
+                end.node.x += dxy;
+                break;
+            case 2 :
+                end.node.y -= dxy;
+                break;
+            case 3 :
+                end.node.x -= dxy;
+                break;
+            default:
+                break;
+        }
+        this._refreshDirection();
+        if(this._animation){
+            let fistPointPos = this._getListPosition(0);
+            this._animation.setPosition(fistPointPos);
+        }
     },
 
     funcPath (event, customData) {
         this._pathIndex = 0;
         let posCur = this._pathPoints[this._pathIndex];
-        this._animationNode.setPosition(cc.v2(posCur[0], posCur[1]));
+        this._animation.setPosition(cc.v2(posCur[0], posCur[1]));
 
         let sid = setInterval( () => {
             this._pathIndex++;
@@ -122,45 +169,52 @@ cc.Class({
                 return;
             }
             let posCur = this._pathPoints[this._pathIndex];
-            this._animationNode.setPosition(cc.v2(posCur[0], posCur[1]));
+            this._animation.setPosition(cc.v2(posCur[0], posCur[1]));
             //rotation
-            this._animationNode.rotation = posCur[2];
+            this._animation.rotation = posCur[2];
         }, 5);
 
     },
 
     createFish () {
-        let url = 'Animation/fish/fish_10101/fish_10101';
+        let url = 'Prefab/fishNode';
         Global.ResourcesManager.loadList([url], Define.resourceType.CCPrefab, () => {
+            this._refreshDirection();
+            this._forceStartAndEnd();
             let fishAnimationPrefab = Global.ResourcesManager.getRes(url);
             this._animation = cc.instantiate(fishAnimationPrefab);
-            this._animationNode = new cc.Node();
-            this.node.addChild(this._animationNode);
-            this._animationNode.addChild(this._animation);
-            this._animationNode.setPosition(-cc.view.getVisibleSize().width / 2, 0);
-            this.playAnimation();
+            this.animationNode.addChild(this._animation);
+            this._animation.getComponent('FishNode').initFish({fid:1, kind:11101, pathIndex:1, step:1});
+            let fistPointPos = this._getListPosition(0);
+            this._animation.setPosition(fistPointPos);
         });
     },
-    playAnimation () {
-        this._animation.getComponent(cc.Animation).play('move');
+
+    _getListPosition (index) {
+        return this.list[index].node.getPosition();
     },
 
-    moveRandomBezier (p1, p2, p3, p4, p5, p6, p11, p12, p13, p14, p15, p16) {
-        let bezier1 = [cc.v2(p1, p2), cc.v2(p3, p4), cc.v2(p5, p6)];
-        let bezier1Action = cc.bezierTo(8, bezier1);
-        let bezier2 = [cc.v2(p11, p12), cc.v2(p13, p14), cc.v2(p15, p16)];
-        let bezier2Action = cc.bezierTo(8, bezier2);
-        let seq = cc.sequence(bezier1Action, bezier2Action, cc.callFunc(this.moveBezierEnd.bind(this)));
+    moveRandomBezier () {
+        const time = 3;
+        let bezier1 = [this._getListPosition(0), this._getListPosition(1), this._getListPosition(2)];
+        let bezier1Action = cc.bezierTo(time, bezier1);
+        let bezier2 = [this._getListPosition(3), this._getListPosition(4), this._getListPosition(5)];
+        let bezier2Action = cc.bezierTo(time, bezier2);
+        let bezier3 = [this._getListPosition(6), this._getListPosition(7), this._getListPosition(8)];
+        let bezier3Action = cc.bezierTo(time, bezier3);
+        // let bezier4 = [this._getListPosition(9), this._getListPosition(10), this._getListPosition(11)];
+        // let bezier4Action = cc.bezierTo(time, bezier4);
+        let seq = cc.sequence(bezier1Action, bezier2Action, bezier3Action, cc.callFunc(this.moveBezierEnd.bind(this)));
 
         this.isMoving = true;
-        this._posPre = this._animationNode.getPosition();
-        this._animationNode.runAction(seq);
+        this._posPre = this._animation.getPosition();
+        this._animation.runAction(seq);
         console.log('move');
     },
     moveBezierEnd () {
         console.log('moveEnd');
         this.isMoving = false;
-        this._animationNode.setPosition(-cc.view.getVisibleSize().width / 2, 0);
+        this._animation.setPosition(-cc.view.getVisibleSize().width / 2, 0);
         console.log(JSON.stringify(this._pathPos));
     },
     update (dt) {
@@ -168,9 +222,9 @@ cc.Class({
             return;
         }
         //角度
-        let posCur = this._animationNode.getPosition();
+        let posCur = this._animation.getPosition();
         let angle = Math.atan2(this._posPre.y - posCur.y, posCur.x - this._posPre.x) * 180 / Math.PI;
-        this._animationNode.rotation = angle;
+        this._animation.rotation = angle;
         this._posPre = posCur;
         // console.log('x = ' + Math.ceil(posCur.x));
         // console.log('y = ' + Math.ceil(posCur.y));

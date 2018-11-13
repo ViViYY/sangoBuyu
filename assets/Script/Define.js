@@ -1,5 +1,6 @@
 const Define = {};
 Define.serverUrl = 'http://192.168.31.155:3000';
+// Define.serverUrl = 'http://121.40.125.46:3000';
 Define.cannonDxToCenter = 300;
 Define.resourceType = cc.Enum({
     CCSpriteFrame: 1,
