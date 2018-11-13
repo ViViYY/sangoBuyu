@@ -118,7 +118,8 @@ cc.Class({
                 Global.GameData.setRoom(data.roomId, data.roomType);
                 Global.FishPathManager.loadPath( () => {
                     cc.audioEngine.stopAll();
-                    cc.director.loadScene('game');
+                    // cc.director.loadScene('game');
+                    cc.director.loadScene('loadScene');
                 });
             }
         });

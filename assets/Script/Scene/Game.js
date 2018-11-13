@@ -367,8 +367,8 @@ cc.Class({
             }
         }
         let print = false;
-        if(deadFishNumber > 0){
-            // print = true;
+        if(serverFishNumber != localFishNumber){
+            print = true;
         }
         if(print) console.log('------------------------onSyncGameData------------------------');
         if(print) console.log('serverFishNumber = ' + serverFishNumber);

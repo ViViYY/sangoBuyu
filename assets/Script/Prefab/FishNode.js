@@ -91,17 +91,20 @@ cc.Class({
         this._moveByPath();
         this._refreshPosition();
         //音效：警报
-        if(this._fishKind == 11101){
+        if(this._fishKind === 11101){
             cc.director.emit('sound', 'warning');
         }
     },
 
     _moveByPath () {
-        this._pathPoints = Global.FishPathManager.getPath(this._pathIndex);
+        if(!this._pathPoints){
+            this._pathPoints = Global.FishPathManager.getPath(this._pathIndex);
+        }
     },
 
     syncData (step, hp, maxHp) {
         this._step = step;
+        // console.log('this._step = ' + this._step);
         this._refreshPosition();
         this.hpBar.progress = hp / maxHp;
     },
@@ -171,7 +174,6 @@ cc.Class({
         this._isDead = true;
         this.playAnimation('capture');
         //击杀音效
-        let deadSound = Global.ConfigManager.getFish(this._fishKind).deadSound;
         cc.director.emit('sound', 'fish-dead-' + this._fishKind);
     },
 

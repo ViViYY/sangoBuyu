@@ -4,5 +4,9 @@
   {"id":3, "content":"挑战场"},
   {"id":4, "content":"人数"},
   {"id":5, "content":"登陆成功"},
-  {"id":6, "content":"返回"}
+  {"id":6, "content":"绘制地图中。。。"},
+  {"id":7, "content":"抓鱼中。。。"},
+  {"id":8, "content":"制造大炮中。。。"},
+  {"id":9, "content":"寻找宝藏中。。。"},
+  {"id":10, "content":"开始巡航。。。"}
 ]
