@@ -117,6 +117,7 @@ cc.Class({
                 console.log('join_room data: ' + JSON.stringify(data));
                 Global.GameData.setRoom(data.roomId, data.roomType);
                 Global.FishPathManager.loadPath( () => {
+                    cc.audioEngine.stopAll();
                     cc.director.loadScene('game');
                 });
             }

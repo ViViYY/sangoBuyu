@@ -141,9 +141,7 @@ cc.Class({
         loginNode.runAction(act);
         this._label = loginNode.getChildByName('label').getComponent(cc.Label);
         this._label.string = '';
-        console.log('asdasdsadsadasds   1');
         Global.ConfigManager.loadConfig();
-        console.log('asdasdsadsadasds   2');
     },
 
     funcStart (event, customEventData) {
@@ -171,6 +169,7 @@ cc.Class({
                         if(this._bgNode){
                             this._bgNode.destroy();
                         }
+                        cc.audioEngine.stopAll();
                         cc.director.loadScene('RoomSelect');
                     }
                 });

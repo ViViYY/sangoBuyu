@@ -90,6 +90,10 @@ cc.Class({
         this._initSuccess = true;
         this._moveByPath();
         this._refreshPosition();
+        //音效：警报
+        if(this._fishKind == 11101){
+            cc.director.emit('sound', 'warning');
+        }
     },
 
     _moveByPath () {
@@ -166,6 +170,9 @@ cc.Class({
         this.hpBar.progress = 0;
         this._isDead = true;
         this.playAnimation('capture');
+        //击杀音效
+        let deadSound = Global.ConfigManager.getFish(this._fishKind).deadSound;
+        cc.director.emit('sound', 'fish-dead-' + this._fishKind);
     },
 
     captureEnd () {

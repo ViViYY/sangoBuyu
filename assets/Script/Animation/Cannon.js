@@ -6,6 +6,7 @@ cc.Class({
     },
 
     shotEnd() {
+        cc.director.emit('sound', 'shot');
         this.node.parent.parent.getComponent('CannonNode').shotEnd();
     },
 

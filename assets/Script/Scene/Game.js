@@ -227,6 +227,7 @@ cc.Class({
         cc.director.getCollisionManager().enabled = false;
         cc.director.off('shot');
         // cc.director.getCollisionManager().enabledDebugDraw = false;
+        cc.audioEngine.stopAll();
     },
 
     //刷新地图方位

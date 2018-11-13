@@ -216,6 +216,10 @@ cc.Class({
         this.cannonNode.addChild(this._animation);
         this._animation.setPosition(0, this._animation.getContentSize().height / 2);
         this._isShotting = false;
+        //玩家升级音效
+        if(this._uid == Global.GameData.getPlayer().uid){
+            cc.director.emit('sound', 'levelUp');
+        }
     },
 
     award (silver, gold, pos) {
@@ -247,6 +251,10 @@ cc.Class({
         }
         this._silver += silver;
         this.labelCoin.string = this._silver;
+        //音效
+        if(this._uid == Global.GameData.getPlayer().uid){
+            cc.director.emit('sound', 'upgrade');
+        }
     },
     _createCoin (coinName, pos, zIndex) {
         const dd = 20;
@@ -268,6 +276,7 @@ cc.Class({
         let delay = cc.delayTime(Math.random() * 0.5 + 0.5);
         let seq = cc.sequence(delay, action, cc.callFunc( () => {
             awardNode.destroy();
+            cc.director.emit('sound', 'getCoin');
         }));
         awardNode.runAction(seq);
     },
