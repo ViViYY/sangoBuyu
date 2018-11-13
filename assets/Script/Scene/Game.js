@@ -235,24 +235,24 @@ cc.Class({
 
         this.bgLayer.scaleX = this.sx;
         this.bgLayer.scaleY = this.sy;
-        switch (mySeatId) {
-            case 0:
-                this._bgNode.scaleX = 1;
-                this._bgNode.scaleY = 1;
-                break;
-            case 1:
-                this._bgNode.scaleX = -1;
-                this._bgNode.scaleY = 1;
-                break;
-            case 2:
-                this._bgNode.scaleX = 1;
-                this._bgNode.scaleY = -1;
-                break;
-            case 3:
-                this._bgNode.scaleX = -1;
-                this._bgNode.scaleY = -1;
-                break;
-        }
+        // switch (mySeatId) {
+        //     case 0:
+        //         this._bgNode.scaleX = 1;
+        //         this._bgNode.scaleY = 1;
+        //         break;
+        //     case 1:
+        //         this._bgNode.scaleX = -1;
+        //         this._bgNode.scaleY = 1;
+        //         break;
+        //     case 2:
+        //         this._bgNode.scaleX = 1;
+        //         this._bgNode.scaleY = -1;
+        //         break;
+        //     case 3:
+        //         this._bgNode.scaleX = -1;
+        //         this._bgNode.scaleY = -1;
+        //         break;
+        // }
 
     },
 
