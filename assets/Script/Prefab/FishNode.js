@@ -66,6 +66,10 @@ cc.Class({
             get () {return this._isDead;},
             visible: false,
         },
+        animIcePrefab: {
+            type: cc.Prefab,
+            default: null,
+        },
     },
 
     onLoad () {
@@ -94,6 +98,10 @@ cc.Class({
         if(this._fishKind === 11101){
             cc.director.emit('sound', 'warning');
         }
+        //技能-冰
+        if(fishData.ice > 0){
+            this.skillIceStart(fishData.ice);
+        }
     },
 
     _moveByPath () {
@@ -102,7 +110,13 @@ cc.Class({
         }
     },
 
-    syncData (step, hp, maxHp) {
+    syncData (step, hp, maxHp, ice) {
+        if(ice > 1){
+            this.skillIceStart(ice);
+            return;
+        } else if(ice === 0) {
+            this.skillIceEnd();
+        }
         this._step = step;
         // console.log('this._step = ' + this._step);
         this._refreshPosition();
@@ -168,6 +182,7 @@ cc.Class({
         if(this._isDead){
             return;
         }
+        this.skillIceEnd();
         let bc = this._animation.getComponent(cc.BoxCollider);
         bc.destroy();
         this.hpBar.progress = 0;
@@ -200,6 +215,36 @@ cc.Class({
     moveEnd () {
         if(!this._isDead){
             this.playAnimation('move');
+        }
+    },
+
+    skillIceStart (time) {
+        //animation
+        if(!this.animIce){
+            let animaNode = new cc.Node('anim_ice');
+            this.animIce = cc.instantiate(this.animIcePrefab);
+            animaNode.addChild(this.animIce);
+            this.node.parent.addChild(animaNode);
+            this.animIce.scaleX = 0.1;
+            this.animIce.scaleY = 0.1;
+            this.animIce.parent.zIndex = 2000;
+        }
+        if(this.icePlaying){
+            return;
+        }
+        this.animIce.parent.setPosition(this.node.getPosition());
+        this.animIce.getComponent(cc.Animation).play('ice');
+        this._animation.getComponent(cc.Animation).pause();
+        this.animIce.active = true;
+        this.icePlaying = true;
+    },
+
+    skillIceEnd () {
+        if(this.animIce){
+            this.animIce.getComponent(cc.Animation).resume();
+            this.playAnimation('move');
+            this.animIce.active = false;
+            this.icePlaying = false;
         }
     },
 

@@ -86,6 +86,9 @@
       },
       {
         "__id__": 59
+      },
+      {
+        "__id__": 60
       }
     ],
     "_prefab": null,
@@ -2094,5 +2097,18 @@
     "_cannonList": [],
     "_fishList": [],
     "_id": "7cSxTt8JtF0ZhULAXyUoU/"
+  },
+  {
+    "__type__": "6300c2DAZJDzoEBPF6PKaot",
+    "_name": "",
+    "_objFlags": 0,
+    "node": {
+      "__id__": 2
+    },
+    "_enabled": true,
+    "topLayer": {
+      "__id__": 6
+    },
+    "_id": "74QZ61QPtPLaRYeOuHD7FO"
   }
 ]

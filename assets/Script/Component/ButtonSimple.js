@@ -38,7 +38,7 @@ cc.Class({
         });
     },
 
-    registeClickEvent (clickEventHandler) {
+    registerClickEvent (clickEventHandler) {
         this.node.getComponent(cc.Button).clickEvents.push(clickEventHandler);
     },
 

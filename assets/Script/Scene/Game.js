@@ -107,7 +107,7 @@ cc.Class({
 
     _onEventListener () {
         //玩家加入
-        Global.SocketController.onPlayerJoinRoom( (data) => {
+        Global.SocketController.registerSEventListener('playerJoinRoom', (data) => {
             if(data.err){
                 console.log('Game:onPlayerJoinRoom,err:' + data.err);
             } else {
@@ -154,18 +154,18 @@ cc.Class({
             }
         });
         //新增鱼
-        Global.SocketController.onFishCreate( (data) => {
+        Global.SocketController.registerSEventListener('fishCreate', (data) => {
             let fishData = data.data.fishData;
             // console.log('onFishCreate, fishData:' + JSON.stringify(fishData));
             this.createFish(fishData);
         });
         //同步帧数据
-        Global.SocketController.onSyncGameData( (data) => {
+        Global.SocketController.registerSEventListener('syncGameData', (data) => {
             let fishData = data.data.fishData;
             this.refreshData(fishData);
         });
         //玩家发射炮弹
-        Global.SocketController.onPlayerShot( (data) => {
+        Global.SocketController.registerSEventListener('player_shot', (data) => {
             let shotData = data.data;
             // console.log('@@onPlayerShot:' + JSON.stringify(shotData));
             for (let i = 0; i < this._cannonList.length; i++) {
@@ -179,7 +179,7 @@ cc.Class({
             }
         });
         //其他玩家离开
-        Global.SocketController.onPlayerExitRoom( (data) => {
+        Global.SocketController.registerSEventListener('player_exit', (data) => {
             let playerData = data.data;
             console.log('onPlayerExitRoom:' + JSON.stringify(data));
             let playerRemoveIndex = -1;
@@ -206,7 +206,7 @@ cc.Class({
         });
         //击杀鱼
         //玩家升级
-        Global.SocketController.onLevelUp( (data) => {
+        Global.SocketController.registerSEventListener('level_up', (data) => {
             let levelData = data.data;
             // console.log('onLevelUp:' + JSON.stringify(levelData));
             let cannon = this._getPlayerCannon(levelData.uid);
@@ -217,13 +217,13 @@ cc.Class({
     },
     onDestroy () {
         console.log('Game Scene onDestroy');
-        Global.SocketController.offPlayerJoinRoom();
-        Global.SocketController.offSyncGameData();
-        Global.SocketController.offFishCreate();
-        Global.SocketController.offSyncGameData();
-        Global.SocketController.offPlayerShot();
-        Global.SocketController.offPlayerExitRoom();
-        Global.SocketController.offLevelUp();
+        Global.SocketController.removeSEventListener('playerJoinRoom');
+        Global.SocketController.removeSEventListener('syncGameData');
+        Global.SocketController.removeSEventListener('fishCreate');
+        Global.SocketController.removeSEventListener('syncGameData');
+        Global.SocketController.removeSEventListener('player_shot');
+        Global.SocketController.removeSEventListener('player_exit');
+        Global.SocketController.removeSEventListener('level_up');
         cc.director.getCollisionManager().enabled = false;
         cc.director.off('shot');
         // cc.director.getCollisionManager().enabledDebugDraw = false;
@@ -305,7 +305,7 @@ cc.Class({
                 buttonBack.getComponent('ButtonSimple').changeText('');
                 //点击事件
                 let clickEventHandlerEasy = Global.ComponentFactory.createClickEventHandler(this.node, 'Game', '_funcBack');
-                buttonBack.getComponent('ButtonSimple').registeClickEvent(clickEventHandlerEasy);
+                buttonBack.getComponent('ButtonSimple').registerClickEvent(clickEventHandlerEasy);
             });
 
             this._onEventListener();
@@ -347,8 +347,8 @@ cc.Class({
             let fishNode = cc.instantiate(fishNodePrefab);
             this._fishList.push(fishNode);
             fishNode.zIndex = 80;
-            fishNode.getComponent('FishNode').initFish(fishData);
             this.bgLayer.addChild(fishNode);
+            fishNode.getComponent('FishNode').initFish(fishData);
         });
     },
 
@@ -397,7 +397,7 @@ cc.Class({
                         }
                     }
                 } else {
-                    fishNode.getComponent('FishNode').syncData(_fishData.step, _fishData.hp, _fishData.maxHp);
+                    fishNode.getComponent('FishNode').syncData(_fishData.step, _fishData.hp, _fishData.maxHp, _fishData.ice);
                 }
             }
         }

@@ -58,6 +58,14 @@ const SocketController = function () {
         _callbackMap[_callbackIndex] = cb;
         notify(msg, data, noLog);
     };
+    //注册消息
+    that.registerSEventListener = function (eventName, cb) {
+        _event.on(eventName, cb);
+    };
+    //移除注册的消息
+    that.removeSEventListener = function (eventName, cb) {
+        _event.off(eventName, cb);
+    };
     that.login = function (username, password, cb) {
         console.log('socket:' + _socket.readyState);
         console.log('socket:' + _socket.state);
@@ -73,53 +81,19 @@ const SocketController = function () {
     that.exitRoom = function (cb) {
         request('exit_room', {}, cb);
     };
-    that.onPlayerExitRoom = function (cb) {
-        _event.on('player_exit', cb);
-    };
-    that.offPlayerExitRoom = function (cb) {
-        _event.off('player_exit', cb);
-    };
     that.askRoomData = function (cb) {
         request('ask_room_data', {}, cb);
     };
     that.playerShot = function (data, cb) {
         request('player_shot', {rotation:data}, cb, true);
     };
-    that.onPlayerShot = function (cb) {
-        _event.on('player_shot', cb);
-    };
-    that.offPlayerShot = function (cb) {
-        _event.off('player_shot', cb);
-    };
     that.hitFish = function (fishId, cb) {
         request('hit_fish', {fishId:fishId}, cb, true);
     };
-    that.onLevelUp = function (cb) {
-        _event.on('level_up', cb);
-    };
-    that.offLevelUp = function (cb) {
-        _event.off('level_up', cb);
+    that.useSkill = function (skillId, cb) {
+        request('use_skill', {skillId:skillId}, cb);
     };
 
-
-    that.onPlayerJoinRoom = function (cb) {
-        _event.on('playerJoinRoom', cb);
-    };
-    that.offPlayerJoinRoom = function (cb) {
-        _event.off('playerJoinRoom', cb);
-    };
-    that.onSyncGameData = function (cb) {
-        _event.on('syncGameData', cb);
-    };
-    that.offSyncGameData = function () {
-        _event.off('syncGameData');
-    };
-    that.onFishCreate = function (cb) {
-        _event.on('fishCreate', cb);
-    };
-    that.offFishCreate = function (cb) {
-        _event.off('fishCreate', cb);
-    };
 
 
     return that;

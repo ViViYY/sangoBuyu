@@ -4,10 +4,10 @@ const ComponentFactory = function (resourcesManager) {
     let that = {};
     let _globalResourcesManager = resourcesManager;
 
-    that.createButtonByAtlas = function (buttonPrefabUrl, clickCb) {
+    that.createButtonByAtlas = function (buttonPrefabUrl, cb) {
         _globalResourcesManager.loadList([buttonPrefabUrl], Define.resourceType.CCPrefab, () => {
             var buttonPrefab = _globalResourcesManager.getRes(buttonPrefabUrl);
-            clickCb(buttonPrefab);
+            cb(buttonPrefab);
         });
     };
     that.createClickEventHandler = function (target, component, handler, customEventData) {
@@ -17,6 +17,12 @@ const ComponentFactory = function (resourcesManager) {
         clickEventHandler.handler = handler;
         clickEventHandler.customEventData = customEventData;
         return clickEventHandler;
+    };
+    that.createCDButton = function (buttonPrefabUrl, cb) {
+        _globalResourcesManager.loadList([buttonPrefabUrl], Define.resourceType.CCPrefab, () => {
+            var buttonPrefab = _globalResourcesManager.getRes(buttonPrefabUrl);
+            cb(buttonPrefab);
+        });
     };
 
     return that;

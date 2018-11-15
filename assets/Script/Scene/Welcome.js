@@ -126,7 +126,7 @@ cc.Class({
             button.getComponent('ButtonSimple').changeText(txt);
             //点击事件
             let clickEventHandler = Global.ComponentFactory.createClickEventHandler(this.node, 'Welcome', 'funcStart', "fuck");
-            button.getComponent('ButtonSimple').registeClickEvent(clickEventHandler);
+            button.getComponent('ButtonSimple').registerClickEvent(clickEventHandler);
 
             Global.SocketController.initSocket();
         });

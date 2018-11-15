@@ -1,12 +1,14 @@
 const Define = {};
-Define.serverUrl = 'http://192.168.31.155:3000';
+// Define.serverUrl = 'http://192.168.31.155:3000';
 // Define.serverUrl = 'http://121.40.125.46:3000';
+Define.serverUrl = 'http://localhost:3000';
 Define.cannonDxToCenter = 300;
 Define.resourceType = cc.Enum({
     CCSpriteFrame: 1,
     CCSpriteAtlas: 2,
     CCPrefab: 3,
     CCFont: 4,
+    CCTexture: 5,
 });
 Define.normalFont = 'minijz';
 Define.ColliderType = cc.Enum({

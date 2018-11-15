@@ -14,6 +14,8 @@ const ResourcesManager = function () {
             t = cc.Prefab;
         } else if(type == Define.resourceType.CCFont){
             t = cc.Font;
+        } else if(type == Define.resourceType.CCTexture){
+            t = cc.Texture2D;
         }
 
         cc.loader.loadRes(path, t, (err, res) => {

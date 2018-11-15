@@ -92,7 +92,7 @@ cc.Class({
             buttonEsay.getComponent('ButtonSimple').changeText(txtEasy);
             //点击事件
             let clickEventHandlerEasy = Global.ComponentFactory.createClickEventHandler(this.node, 'RoomSelect', 'funcStart', 1);
-            buttonEsay.getComponent('ButtonSimple').registeClickEvent(clickEventHandlerEasy);
+            buttonEsay.getComponent('ButtonSimple').registerClickEvent(clickEventHandlerEasy);
             // 挑战场按钮
             var buttonHard = cc.instantiate(buttonPrefab);
             this.node.addChild(buttonHard);
@@ -104,7 +104,7 @@ cc.Class({
             buttonHard.getComponent('ButtonSimple').changeText(txtHard);
             //点击事件
             let clickEventHandlerHard = Global.ComponentFactory.createClickEventHandler(this.node, 'RoomSelect', 'funcStart', 2);
-            buttonHard.getComponent('ButtonSimple').registeClickEvent(clickEventHandlerHard);
+            buttonHard.getComponent('ButtonSimple').registerClickEvent(clickEventHandlerHard);
         });
     },
 
