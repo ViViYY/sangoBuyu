@@ -87,6 +87,8 @@ cc.Class({
         this._pathIndex = fishData.pathIndex;
         this._step = fishData.step;
         this._posPre = this.node.getPosition();
+        //name
+        this.fishConfig = Global.ConfigManager.getFish(this._fid);
         //animation
         this._animation = cc.instantiate(this.fishPrefab[FISH_KIND_LIST_INDEX[this._fishKind]]);
         this.node.addChild(this._animation);
@@ -161,7 +163,11 @@ cc.Class({
             if(this.logOpen) console.log('[fish]onCollisionEnter:other:' + other.name + ' - self:' + self.name);
             const bulletLevel = other.node.getComponent('BulletNode').level;
             const bulletUId = other.node.getComponent('BulletNode').uid;
+            const bulletTargetId = other.node.getComponent('BulletNode').targetFishId;
             const fishId = self.node.parent.getComponent('FishNode').fid;
+            if(bulletTargetId > 0 && bulletTargetId != fishId){
+                return;
+            }
             let webNode = cc.instantiate(this.webNodePrefab);
             webNode.getComponent('WebNode').init(bulletLevel - 1);
             let p_bullet = other.node.getPosition();
@@ -170,6 +176,7 @@ cc.Class({
             this.node.addChild(webNode);
 
             if(bulletUId === Global.GameData.getPlayer().uid){
+                console.log('hit fish' + fishId);
                 Global.SocketController.hitFish(fishId,  (err, data) => {
 
                 });
@@ -246,6 +253,11 @@ cc.Class({
             this.animIce.active = false;
             this.icePlaying = false;
         }
+    },
+
+    mouseClick (pos) {
+        let bc = this._animation.getComponent(cc.BoxCollider);
+        return bc.world.aabb.contains(pos);
     },
 
 

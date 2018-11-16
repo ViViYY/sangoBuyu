@@ -12,6 +12,7 @@ cc.Class({
     },
 
     onLoad () {
+        this._skillButtons = {};
         this.sx = 1;
         this.sy = 1;
         let visibleSize;
@@ -51,36 +52,56 @@ cc.Class({
         } else {
             winSize = cc.view.getFrameSize();
         }
+        const playerData = Global.GameData.getPlayer();
+        const skillConfig = Global.ConfigManager.getSkill(playerData.s1);
         Global.ComponentFactory.createButtonByAtlas('Prefab/CDButton', (buttonPrefab) => {
-            // 返回按钮
-            var buttonSkill = cc.instantiate(buttonPrefab);
-            this.node.addChild(buttonSkill);
-            // 按钮样式
-            buttonSkill.getComponent('CDButton').init(3, 'round', 'ice',  () => {
-                const buttonWidth = buttonSkill.getComponent('CDButton').getWidth();
-                buttonSkill.setPosition( (- Define.cannonDxToCenter + buttonWidth) * this.sx, (- visibleSize.height / 2 + buttonSkill.getContentSize().height / 2));
+            // s1按钮
+            var buttonSkill1 = cc.instantiate(buttonPrefab);
+            this.node.addChild(buttonSkill1);
+            buttonSkill1.active = false;
+            this._skillButtons[playerData.s1] = buttonSkill1;
+            buttonSkill1.getComponent('CDButton').init(skillConfig, 'round', 'ice',  () => {
+                const buttonWidth = buttonSkill1.getComponent('CDButton').getWidth();
+                buttonSkill1.setPosition( (- Define.cannonDxToCenter + buttonWidth) * this.sx, (- visibleSize.height / 2 + buttonSkill1.getContentSize().height / 2));
                 //点击事件
-                let clickEventHandler = Global.ComponentFactory.createClickEventHandler(this.node, 'PlayerController', 'useSkill', 'skillIce');
-                buttonSkill.getComponent('CDButton').registerClickEvent(clickEventHandler);
-
+                let clickEventHandler = Global.ComponentFactory.createClickEventHandler(this.node, 'PlayerController', 'useSkill', playerData.s1);
+                buttonSkill1.getComponent('CDButton').registerClickEvent(clickEventHandler);
+                buttonSkill1.active = true;
             });
-
+            // s1按钮
+            var buttonSkill2 = cc.instantiate(buttonPrefab);
+            this.node.addChild(buttonSkill2);
+            buttonSkill2.active = false;
+            this._skillButtons[playerData.s2] = buttonSkill2;
+            buttonSkill2.getComponent('CDButton').init(skillConfig, 'round', 'ice',  () => {
+                const buttonWidth = buttonSkill2.getComponent('CDButton').getWidth();
+                buttonSkill2.setPosition( (- Define.cannonDxToCenter + buttonWidth) * this.sx * 3, (- visibleSize.height / 2 + buttonSkill2.getContentSize().height / 2));
+                //点击事件
+                let clickEventHandler = Global.ComponentFactory.createClickEventHandler(this.node, 'PlayerController', 'useSkill', playerData.s2);
+                buttonSkill2.getComponent('CDButton').registerClickEvent(clickEventHandler);
+                buttonSkill2.active = true;
+            });
         });
     },
 
     useSkill (event, customEventData) {
-        console.log('useSkill = ' + customEventData);
-        switch (customEventData) {
-            case 'skillIce':
-                Global.SocketController.useSkill(10001,  (err, data) => {
-                    if(err){
-                        console.log('skillIce:err:' + err);
-                    }
-                });
-                break;
-            default:
-                return;
-        }
+        Global.SocketController.useSkill(customEventData,  (err, data) => {
+            if(err){
+                console.log('skillIce:err:' + err);
+            } else {
+                const button = this._skillButtons[customEventData];
+                button.getComponent('CDButton').setDisable();
+                switch (data.skillId) {
+                    case 1001:
+                        break;
+                    case 1002:
+                        Global.GameData.getPlayer().targetFishId = 0;
+                        break;
+                    default:
+                        break;
+                }
+            }
+        });
     },
 
 });

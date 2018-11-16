@@ -17,7 +17,6 @@ cc.Class({
             type: cc.Sprite,
             default: null,
         },
-        coolDown: 3,
         _leftTime: 0,
     },
 
@@ -32,8 +31,8 @@ cc.Class({
         this._useSkill();
     },
 
-    init (cd, sprName1, sprName2, cb) {
-        this.coolDown = cd;
+    init (skillConfig, sprName1, sprName2, cb) {
+        this._skillConfig = skillConfig;
         const url1 = 'Texture/' + sprName1;
         const url2 = 'Texture/' + sprName2;
         Global.ResourcesManager.loadList([url1, url2], Define.resourceType.CCSpriteFrame, () => {
@@ -61,16 +60,16 @@ cc.Class({
     },
 
     _useSkill () {
-        this.setDisable();
+
     },
 
     update (dt) {
         if(this._leftTime === 0){
             return;
         }
-        this._leftTime -= dt;
+        this._leftTime -= dt * 1000;
         this._leftTime = Math.max(this._leftTime, 0);
-        this.progressBar.progress = this._leftTime / this.coolDown;
+        this.progressBar.progress = this._leftTime / this._skillConfig.cd;
         if(this._leftTime === 0){
             this.setEnable();
         }
@@ -83,7 +82,7 @@ cc.Class({
     },
 
     setDisable () {
-        this._leftTime = this.coolDown;
+        this._leftTime = this._skillConfig.cd;
         this.node.getComponent(cc.Button).enabled = false;
     },
 

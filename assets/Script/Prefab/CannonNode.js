@@ -144,7 +144,7 @@ cc.Class({
         this._animation.getComponent(cc.Animation).play('cannon' + this._level);
     },
 
-    otherPlayerShotPlay (rotation) {
+    otherPlayerShotPlay (rotation, targetFishId) {
         // console.log('otherPlayerShotPlay');
         //rotation
         //刷新炮弹的 角度
@@ -166,7 +166,7 @@ cc.Class({
         //play
         this._isShotting = true;
         this._animation.getComponent(cc.Animation).play('cannon' + this._level);
-        this.shot();
+        this.shot(targetFishId);
     },
 
     leave () {
@@ -177,14 +177,14 @@ cc.Class({
     shotEnd() {
         this._isShotting = false;
         if(Global.GameData.getPlayer().uid === this.uid){
-            this.shot();
+            this.shot(Global.GameData.getPlayer().targetFishId);
         }
     },
 
-    shot () {
+    shot (targetFishId) {
         let bulletNode = cc.instantiate(this.bulletPrefabs[this._level - 1]);
         this.node.parent.addChild(bulletNode);
-        bulletNode.getComponent('BulletNode').initBullet(this._uid, this._level, this.cannonNode.rotation);
+        bulletNode.getComponent('BulletNode').initBullet(this._uid, this._level, this.cannonNode.rotation, targetFishId);
         bulletNode.zIndex = 90;
         let nodePos = this.node.getPosition();
         let cannonLength = this._animation.getContentSize().height;
@@ -196,7 +196,7 @@ cc.Class({
         bulletNode.setPosition(nodePos);
         if(Global.GameData.getPlayer().uid === this.uid){
             //send-notification-'shot'
-            cc.director.emit('shot', this.cannonNode.rotation);
+            cc.director.emit('shot', this.cannonNode.rotation, Global.GameData.getPlayer().targetFishId);
         }
         //消耗coin
         this._costCoin();

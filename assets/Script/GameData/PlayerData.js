@@ -1,4 +1,3 @@
-import Define from './../Define'
 
 const PlayerData = function (playerData) {
     let that = {};
@@ -9,32 +8,50 @@ const PlayerData = function (playerData) {
     let _exp = playerData.exp;
     let _silver = playerData.silver;
     let _gold = playerData.gold;
+    let _s1 = playerData.s1;
+    let _s2 = playerData.s2;
 
     let _seatId = -1;
+    let _targetFishId = -1;
 
-    const setDefineProperty = function (type, propertyName, propertyValue) {
-        switch (type) {
-            case Define.get :
-                Object.defineProperty(that, propertyName, {get:function () {return propertyValue;}});
-                break;
-            case Define.set :
-                Object.defineProperty(that, propertyName, {set:function (value) {propertyValue = value;}});
-                break;
-            case Define.both :
-                Object.defineProperty(that, propertyName, {get:function () {return propertyValue;}, set:function (value) {propertyValue = value;}});
-                break;
-            default:
-                break;
-        }
-    };
-    setDefineProperty(Define.both, 'uid', _uid);
-    setDefineProperty(Define.both, 'nickname', _nickname);
-    setDefineProperty(Define.both, 'level', _level);
-    setDefineProperty(Define.both, 'exp', _exp);
-    setDefineProperty(Define.both, 'vip', _vip);
-    setDefineProperty(Define.both, 'silver', _silver);
-    setDefineProperty(Define.both, 'gold', _gold);
-    setDefineProperty(Define.both, 'seatId', _seatId);
+    //getter ande setter
+    {
+        Object.defineProperty(that, 'uid', {
+            get: function () {return _uid;}, set: function (val) {_uid = val;}, enumerable: true,
+        });
+        Object.defineProperty(that, 'nickname', {
+            get: function () {return _nickname;}, set: function (val) {_nickname = val;}, enumerable: true,
+        });
+        Object.defineProperty(that, 'level', {
+            get: function () {return _level;}, set: function (val) {_level = val;}, enumerable: true,
+        });
+        Object.defineProperty(that, 'exp', {
+            get: function () {return _exp;}, set: function (val) {_exp = val;}, enumerable: true,
+        });
+        Object.defineProperty(that, 'vip', {
+            get: function () {return _vip;}, set: function (val) {_vip = val;}, enumerable: true,
+        });
+        Object.defineProperty(that, 'silver', {
+            get: function () {return _silver;}, set: function (val) {_silver = val;}, enumerable: true,
+        });
+        Object.defineProperty(that, 'gold', {
+            get: function () {return _gold;}, set: function (val) {_gold = val;}, enumerable: true,
+        });
+        Object.defineProperty(that, 's1', {
+            get: function () {return _s1;}, set: function (val) {_s1 = val;}, enumerable: true,
+        });
+        Object.defineProperty(that, 's2', {
+            get: function () {return _s2;}, set: function (val) {_s2 = val;}, enumerable: true,
+        });
+        Object.defineProperty(that, 'seatId', {
+            get: function () {return _seatId;}, set: function (val) {_seatId = val;}, enumerable: true,
+        });
+        Object.defineProperty(that, 'targetFishId', {
+            get: function () {return _targetFishId;}, set: function (val) {_targetFishId = val;}, enumerable: true,
+        });
+    }
+
+
 
     return that;
 };

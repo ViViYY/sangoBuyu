@@ -24,6 +24,9 @@ const GameData = function () {
         _room.roomId = roomId;
         _room.roomType = roomType;
     };
+    that.getRoomData = function () {
+        return _room;
+    };
 
     const setDefineProperty = function (type, propertyName, propertyValue) {
         switch (type) {
@@ -59,6 +62,8 @@ const GameData = function () {
         _player.exp = playerData.exp;
         _player.silver = playerData.silver;
         _player.gold = playerData.gold;
+        _player.s1 = playerData.s1;
+        _player.s2 = playerData.s2;
     };
     //获取玩家数据
     that.getPlayer = function () {

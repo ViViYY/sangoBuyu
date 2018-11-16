@@ -84,8 +84,8 @@ const SocketController = function () {
     that.askRoomData = function (cb) {
         request('ask_room_data', {}, cb);
     };
-    that.playerShot = function (data, cb) {
-        request('player_shot', {rotation:data}, cb, true);
+    that.playerShot = function (rotation, targetFishId, cb) {
+        request('player_shot', {rotation:rotation, targetFishId:targetFishId}, cb, true);
     };
     that.hitFish = function (fishId, cb) {
         request('hit_fish', {fishId:fishId}, cb, true);

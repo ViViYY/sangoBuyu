@@ -57,12 +57,12 @@ cc.Class({
         let url = 'Sound/' + this.soundName;
         if(this.isRandom && this.endNumber > this.startNumber > 0){
             let randNumber = Math.floor(Math.random() * (this.endNumber - this.startNumber + 1)) + this.startNumber;
-            console.log('randNumber:' + randNumber);
+            // console.log('randNumber:' + randNumber);
             url += randNumber;
         }
-        console.log('加载音乐:' + url);
+        // console.log('加载音乐:' + url);
         cc.loader.loadRes(url, cc.AudioClip, (err, clip) => {
-            console.log('加载音乐 完成：' + url);
+            // console.log('加载音乐 完成：' + url);
             this._clip = clip;
             if(this.autoPlay){
                 this.play();

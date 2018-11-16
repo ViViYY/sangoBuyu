@@ -65,7 +65,7 @@ cc.Class({
     },
 
     startLoad () {
-        this.bar.progress = 0.15;
+        this.bar.progress = 0.1;
         this.txt.string = Global.LanguageManager.getLanguage(6);
         this._loadSprite( () => {
             setTimeout( () => {
@@ -91,7 +91,7 @@ cc.Class({
         Global.ResourcesManager.loadList([url], Define.resourceType.CCPrefab, () => {
             console.log('加载fish完毕');
             this.txt.string = Global.LanguageManager.getLanguage(8);
-            this.bar.progress = 0.5;
+            this.bar.progress = 0.4;
             this._loadAward(cb);
         });
     },
@@ -101,7 +101,7 @@ cc.Class({
         Global.ResourcesManager.loadList([urlAward], Define.resourceType.CCPrefab, () => {
             console.log('加载award完毕');
             this.txt.string = Global.LanguageManager.getLanguage(9);
-            this.bar.progress = 0.7;
+            this.bar.progress = 0.5;
             this._loadCannon(cb);
         });
     },
@@ -111,6 +111,13 @@ cc.Class({
         Global.ResourcesManager.loadList([urlCannon], Define.resourceType.CCPrefab, () => {
             console.log('加载cannon完毕');
             this.txt.string = Global.LanguageManager.getLanguage(10);
+            this.bar.progress = 0.7;
+            this._loadConfig(cb);
+        });
+    },
+
+    _loadConfig (cb) {
+        Global.ConfigManager.loadConfig( () => {
             this.bar.progress = 1;
             if(cb){
                 cb();

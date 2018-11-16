@@ -46,12 +46,12 @@ cc.Class({
         } else {
             this.sy = visibleSize.height / (visibleSize.width / designSize.width * designSize.height);
         }
-        console.log('visibleSize = ' + visibleSize);
-        console.log('designSize = ' + designSize);
-        console.log('p1 = ' + p1);
-        console.log('p2 = ' + p2);
-        console.log("this.sx:" + this.sx);
-        console.log("this.sy:" + this.sy);
+        // console.log('visibleSize = ' + visibleSize);
+        // console.log('designSize = ' + designSize);
+        // console.log('p1 = ' + p1);
+        // console.log('p2 = ' + p2);
+        // console.log("this.sx:" + this.sx);
+        // console.log("this.sy:" + this.sy);
 
         this._loadBackground();
         cc.sys.garbageCollect();

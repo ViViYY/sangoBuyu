@@ -13,6 +13,14 @@ cc.Class({
             type: cc.Node,
             default: null,
         },
+        fishLayer: {
+            type: cc.Node,
+            default: null,
+        },
+        cannonLayer: {
+            type: cc.Node,
+            default: null,
+        },
         topLayer: {
             type: cc.Node,
             default: null,
@@ -29,8 +37,6 @@ cc.Class({
             default: 1,
             type: cc.Integer,
         },
-        _cannonList: [],
-        _fishList: [],
     },
 
     onLoad () {
@@ -56,49 +62,43 @@ cc.Class({
         } else {
             this.sy = visibleSize.height / (visibleSize.width / designSize.width * designSize.height);
         }
-        console.log('visibleSize = ' + visibleSize);
-        console.log('designSize = ' + designSize);
-        console.log('p1 = ' + p1);
-        console.log('p2 = ' + p2);
-        console.log("this.sx:" + this.sx);
-        console.log("this.sy:" + this.sy);
+        // console.log('visibleSize = ' + visibleSize);
+        // console.log('designSize = ' + designSize);
+        // console.log('p1 = ' + p1);
+        // console.log('p2 = ' + p2);
+        // console.log("this.sx:" + this.sx);
+        // console.log("this.sy:" + this.sy);
         this.topLayer.width = visibleSize.width;
         this.topLayer.height = visibleSize.width;
         this.node.on(cc.Node.EventType.TOUCH_START, (event) => {
             if(this._cannonNode){
+                //检测是否点中鱼
+                const pos = this.node.convertToNodeSpace(event.touch.getLocation());
+                if(0 === Global.GameData.getPlayer().targetFishId){
+                    let fishList = Global.GameData.getRoomData().getFishList();
+                    for(let i = 0; i < fishList.length; i++){
+                        let fish = fishList[i];
+                        let b = fish.getComponent('FishNode').mouseClick(pos);
+                        if(b){
+                            console.log('锁定鱼' + fish.getComponent('FishNode').fid);
+                            Global.GameData.getPlayer().targetFishId = fish.getComponent('FishNode').fid;
+                            break;
+                        }
+                    }
+                }
                 this._cannonNode.getComponent('CannonNode').changeRotation(event.touch.getLocation().x, event.touch.getLocation().y);
                 this._cannonNode.getComponent('CannonNode').startShot();
-                // for(let i = 0; i < this._cannonList.length; i++){
-                //     let cannon = this._cannonList[i];
-                //     cannon.getComponent('CannonNode').changeRotation(event.touch.getLocation().x, event.touch.getLocation().y);
-                //     cannon.getComponent('CannonNode').startShot();
-                // }
             }
-            // this._fishPath.length = 0;
         });
         this.node.on(cc.Node.EventType.TOUCH_MOVE, (event) => {
             if(this._cannonNode){
                 this._cannonNode.getComponent('CannonNode').changeRotation(event.touch.getLocation().x, event.touch.getLocation().y);
             }
-            // for(let i = 0; i < this._cannonList.length; i++){
-            //     let cannon = this._cannonList[i];
-            //     cannon.getComponent('CannonNode').changeRotation(event.touch.getLocation().x, event.touch.getLocation().y);
-            // }
-            // console.log(event.touch.getLocation().x + ',' +  event.touch.getLocation().y);
-            // let objPath = {};
-            // objPath.x = Math.ceil(event.touch.getLocation().x);
-            // objPath.y = Math.ceil(event.touch.getLocation().y);
-            // this._fishPath.push(objPath);
         });
         this.node.on(cc.Node.EventType.TOUCH_END, (event) => {
             if(this._cannonNode){
                 this._cannonNode.getComponent('CannonNode').endShot();
             }
-            // for(let i = 0; i < this._cannonList.length; i++){
-            //     let cannon = this._cannonList[i];
-            //     cannon.getComponent('CannonNode').endShot();
-            // }
-            // console.log(JSON.stringify(this._fishPath));
         });
         cc.director.getCollisionManager().enabled = true;
         // cc.director.getCollisionManager().enabledDebugDraw = true;
@@ -168,37 +168,20 @@ cc.Class({
         Global.SocketController.registerSEventListener('player_shot', (data) => {
             let shotData = data.data;
             // console.log('@@onPlayerShot:' + JSON.stringify(shotData));
-            for (let i = 0; i < this._cannonList.length; i++) {
-                const otherCannon = this._cannonList[i];
-                // console.log(i + ':' + otherCannon.getComponent('CannonNode').uid);
-                const ouid = otherCannon.getComponent('CannonNode').uid;
-                // console.log('otherPlayerShotPlay' + shotData.shotter);
-                if(ouid === shotData.shotter){
-                    otherCannon.getComponent('CannonNode').otherPlayerShotPlay(shotData.rotation);
-                }
-            }
+            const player = Global.GameData.getRoomData().getPlayer(shotData.shotter);
+            player.getComponent('CannonNode').otherPlayerShotPlay(shotData.rotation, shotData.targetFishId);
         });
         //其他玩家离开
         Global.SocketController.registerSEventListener('player_exit', (data) => {
             let playerData = data.data;
             console.log('onPlayerExitRoom:' + JSON.stringify(data));
-            let playerRemoveIndex = -1;
-            for (let i = 0; i < this._cannonList.length; i++) {
-                const otherCannon = this._cannonList[i];
-                const ouid = otherCannon.getComponent('CannonNode').uid;
-                if(ouid === playerData.uid){
-                    playerRemoveIndex = i;
-                    otherCannon.getComponent('CannonNode').leave();
-                }
-            }
-            //list移除
-            if(playerRemoveIndex > -1){
-                this._cannonList.splice(playerRemoveIndex, 1);
-            }
+            const player = Global.GameData.getRoomData().getPlayer(playerData.uid);
+            player.getComponent('CannonNode').leave();
+            Global.GameData.getRoomData().removePlayer(playerData.uid);
         });
         //get-notification-'shot'
-        cc.director.on('shot', function (data) {
-            Global.SocketController.playerShot(data,  (err, data) => {
+        cc.director.on('shot', function (rotation, targetFishId) {
+            Global.SocketController.playerShot(rotation, targetFishId,  (err, data) => {
                 if(err){
                     console.warn('[Game]playerShot : err : ' + err);
                 }
@@ -209,14 +192,16 @@ cc.Class({
         Global.SocketController.registerSEventListener('level_up', (data) => {
             let levelData = data.data;
             // console.log('onLevelUp:' + JSON.stringify(levelData));
-            let cannon = this._getPlayerCannon(levelData.uid);
-            if(cannon){
-                cannon.getComponent('CannonNode').levelUp(levelData.level);
+            // let cannon = this._getPlayerCannon(levelData.uid);
+            let player = Global.GameData.getRoomData().getPlayer(levelData.uid);
+            if(player){
+                player.getComponent('CannonNode').levelUp(levelData.level);
             }
         });
     },
     onDestroy () {
         console.log('Game Scene onDestroy');
+        Global.GameData.getRoomData().cleanRoom();
         Global.SocketController.removeSEventListener('playerJoinRoom');
         Global.SocketController.removeSEventListener('syncGameData');
         Global.SocketController.removeSEventListener('fishCreate');
@@ -232,44 +217,8 @@ cc.Class({
 
     //刷新地图方位
     _refreshBackgroundRotation () {
-        let mySeatId = Global.GameData.getPlayer().seatId;
-
         this.bgLayer.scaleX = this.sx;
         this.bgLayer.scaleY = this.sy;
-        // switch (mySeatId) {
-        //     case 0:
-        //         this._bgNode.scaleX = 1;
-        //         this._bgNode.scaleY = 1;
-        //         break;
-        //     case 1:
-        //         this._bgNode.scaleX = -1;
-        //         this._bgNode.scaleY = 1;
-        //         break;
-        //     case 2:
-        //         this._bgNode.scaleX = 1;
-        //         this._bgNode.scaleY = -1;
-        //         break;
-        //     case 3:
-        //         this._bgNode.scaleX = -1;
-        //         this._bgNode.scaleY = -1;
-        //         break;
-        // }
-
-    },
-
-    _getPlayerCannon (uid) {
-        let result = null;
-        for (let i = 0; i < this._cannonList.length; i++) {
-            const cannon = this._cannonList[i];
-            const ouid = cannon.getComponent('CannonNode').uid;
-            if(ouid === uid){
-                result = cannon;
-            }
-        }
-        if(!result){
-           cc.warn(' [Game] _getPlayerCannon : result is not exsit : uid :' + uid);
-        }
-        return result;
     },
 
     _loadBackground () {
@@ -330,9 +279,9 @@ cc.Class({
         Global.ResourcesManager.loadList([url], Define.resourceType.CCPrefab, () => {
             let cannonNodePrefab = Global.ResourcesManager.getRes(url);
             let cannonNode = cc.instantiate(cannonNodePrefab);
-            this.bgLayer.addChild(cannonNode);
+            this.cannonLayer.addChild(cannonNode);
             cannonNode.getComponent('CannonNode').initCannon(_uid, _nickname, _silver, _level, _seatId);
-            this._cannonList.push(cannonNode);
+            Global.GameData.getRoomData().addPlayer(cannonNode);
             if(_uid == Global.GameData.player.uid){
                 this._cannonNode = cannonNode;
             }
@@ -345,9 +294,9 @@ cc.Class({
         Global.ResourcesManager.loadList([url, urlAward], Define.resourceType.CCPrefab, () => {
             let fishNodePrefab = Global.ResourcesManager.getRes(url);
             let fishNode = cc.instantiate(fishNodePrefab);
-            this._fishList.push(fishNode);
+            Global.GameData.getRoomData().addFish(fishNode);
             fishNode.zIndex = 80;
-            this.bgLayer.addChild(fishNode);
+            this.fishLayer.addChild(fishNode);
             fishNode.getComponent('FishNode').initFish(fishData);
         });
     },
@@ -355,9 +304,9 @@ cc.Class({
     refreshData (fishData) {
         // console.log('onSyncGameData, fishData:' + JSON.stringify(fishData));
         let fishMap = {};
-        let deadIndexList = [];
+        let deadFidList = [];
         let serverFishNumber = fishData.length;
-        let localFishNumber = this._fishList.length;
+        let localFishNumber = Global.GameData.getRoomData().getFishList().length;
         let deadFishNumber = 0;
         for(let i = 0; i < fishData.length; i++){
             let fish = fishData[i];
@@ -375,9 +324,9 @@ cc.Class({
         if(print) console.log('localFishNumber = ' + localFishNumber);
         if(print) console.log('deadFishNumber = ' + deadFishNumber);
 
-
-        for(let i = 0; i < this._fishList.length; i++){
-            let fishNode = this._fishList[i];
+        let fishList = Global.GameData.getRoomData().getFishList();
+        for(let i = 0; i < fishList.length; i++){
+            let fishNode = fishList[i];
             let _fishData = fishMap[fishNode.getComponent('FishNode').fid];
             if(!_fishData){
                 if(print) console.log('onSyncGameData 1, fishData:' + JSON.stringify(fishData));
@@ -386,34 +335,26 @@ cc.Class({
                 if(_fishData.hp === 0){
                     if(print) console.log('remove dead fish fid = ' + _fishData.fid);
                     if(print) console.log('remove dead fish index = ' + i);
-                    deadIndexList.push(i);
+                    deadFidList.push(_fishData.fid);
                     fishNode.getComponent('FishNode').fishKilled();
                     //cannon
-                    for (let i = 0; i < this._cannonList.length; i++) {
-                        const cannon = this._cannonList[i];
-                        const ouid = cannon.getComponent('CannonNode').uid;
-                        if(ouid === _fishData.killer){
-                            cannon.getComponent('CannonNode').award(_fishData.silver, _fishData.gold, fishNode.getPosition());
-                        }
-                    }
+                    let player = Global.GameData.getRoomData().getPlayer(_fishData.killer);
+                    player.getComponent('CannonNode').award(_fishData.silver, _fishData.gold, fishNode.getPosition());
                 } else {
                     fishNode.getComponent('FishNode').syncData(_fishData.step, _fishData.hp, _fishData.maxHp, _fishData.ice);
                 }
             }
         }
         //死鱼移除队列
-        if(deadIndexList.length > 0){
-            if(print) console.log('onSyncGameData 2, fishData:' + JSON.stringify(fishData));
-            for(let i = 0; i < deadIndexList.length; i++){
-                let index = deadIndexList[i];
-                if(print) console.log('死鱼移除队列  index = ' + index);
-                let fishNode = this._fishList[index];
-                if(print) console.warn(' 死鱼移除队列, fishId: ' + fishNode.getComponent('FishNode').fid);
-                this._fishList.splice(index, 1);
-            }
+        for(let i = 0; i < deadFidList.length; i++){
+            let deadFid = deadFidList[i];
+            Global.GameData.getRoomData().removeFish(deadFid);
         }
-        let localFishNumber2 = this._fishList.length;
+        let localFishNumber2 = Global.GameData.getRoomData().getFishList().length;
         if(print) console.log('localFishNumber2 = ' + localFishNumber2);
+        if(serverFishNumber != deadFishNumber + localFishNumber2){
+            console.log('onSyncGameData 3, fishData:' + JSON.stringify(fishData));
+        }
     },
 
 });

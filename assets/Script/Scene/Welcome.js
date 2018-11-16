@@ -64,8 +64,8 @@ cc.Class({
         let designSize = cc.view.getDesignResolutionSize();
         let p1 = designSize.width / designSize.height;
         let p2 = visibleSize.width / visibleSize.height;
-        console.log('visibleSize = ' + visibleSize);
-        console.log('designSize = ' + designSize);
+        // console.log('visibleSize = ' + visibleSize);
+        // console.log('designSize = ' + designSize);
         cc.view.setDesignResolutionSize(designSize.width, designSize.height, cc.ResolutionPolicy.SHOW_ALL);
         //真实运行环境比较宽
         if(p1 < p2){
@@ -73,10 +73,10 @@ cc.Class({
         } else {
             this.sy = visibleSize.height / (visibleSize.width / designSize.width * designSize.height);
         }
-        console.log("p1:" + p1);
-        console.log("p2:" + p2);
-        console.log("this.sx:" + this.sx);
-        console.log("this.sy:" + this.sy);
+        // console.log("p1:" + p1);
+        // console.log("p2:" + p2);
+        // console.log("this.sx:" + this.sx);
+        // console.log("this.sy:" + this.sy);
 
         cc.director.on('connect_Success', this._connectServerSuccess, this);
         // 已经登陆过
@@ -141,7 +141,6 @@ cc.Class({
         loginNode.runAction(act);
         this._label = loginNode.getChildByName('label').getComponent(cc.Label);
         this._label.string = '';
-        Global.ConfigManager.loadConfig();
     },
 
     funcStart (event, customEventData) {
