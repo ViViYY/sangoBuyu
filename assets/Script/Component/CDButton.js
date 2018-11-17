@@ -45,8 +45,6 @@ cc.Class({
             this.bar.spriteFrame = frame1;
             this.bar.node.width  = this.node.width;
             this.bar.node.height  = this.node.height;
-            this.spr.node.scaleX = 0.1;
-            this.spr.node.scaleY = 0.1;
             cb();
         });
     },

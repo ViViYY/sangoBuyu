@@ -62,7 +62,7 @@ cc.Class({
             this._skillButtons[playerData.s1] = buttonSkill1;
             buttonSkill1.getComponent('CDButton').init(skillConfig, 'round', 'ice',  () => {
                 const buttonWidth = buttonSkill1.getComponent('CDButton').getWidth();
-                buttonSkill1.setPosition( (- Define.cannonDxToCenter + buttonWidth) * this.sx, (- visibleSize.height / 2 + buttonSkill1.getContentSize().height / 2));
+                buttonSkill1.setPosition( (- Define.skillDxToCenter) * this.sx, (- visibleSize.height / 2 + buttonSkill1.getContentSize().height / 2));
                 //点击事件
                 let clickEventHandler = Global.ComponentFactory.createClickEventHandler(this.node, 'PlayerController', 'useSkill', playerData.s1);
                 buttonSkill1.getComponent('CDButton').registerClickEvent(clickEventHandler);
@@ -73,9 +73,9 @@ cc.Class({
             this.node.addChild(buttonSkill2);
             buttonSkill2.active = false;
             this._skillButtons[playerData.s2] = buttonSkill2;
-            buttonSkill2.getComponent('CDButton').init(skillConfig, 'round', 'ice',  () => {
+            buttonSkill2.getComponent('CDButton').init(skillConfig, 'round', 'miaozhun',  () => {
                 const buttonWidth = buttonSkill2.getComponent('CDButton').getWidth();
-                buttonSkill2.setPosition( (- Define.cannonDxToCenter + buttonWidth) * this.sx * 3, (- visibleSize.height / 2 + buttonSkill2.getContentSize().height / 2));
+                buttonSkill2.setPosition( (- Define.skillDxToCenter + buttonWidth + 15) * this.sx, (- visibleSize.height / 2 + buttonSkill2.getContentSize().height / 2));
                 //点击事件
                 let clickEventHandler = Global.ComponentFactory.createClickEventHandler(this.node, 'PlayerController', 'useSkill', playerData.s2);
                 buttonSkill2.getComponent('CDButton').registerClickEvent(clickEventHandler);

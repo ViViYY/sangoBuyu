@@ -79,18 +79,18 @@ const RoomData = function (roomId) {
     };
     // 移除一条鱼
     that.removeFish = function (removeFishId) {
-        console.log('removeFishId = ' + removeFishId);
+        // console.log('removeFishId = ' + removeFishId);
         let removeIndex = -1;
         for(let i = 0; i < _fishList.length; i++){
             let fishNode = _fishList[i];
             if(fishNode.getComponent('FishNode').fid === removeFishId){
-                console.log('fishNode Fid = ' + fishNode.getComponent('FishNode').fid);
+                // console.log('fishNode Fid = ' + fishNode.getComponent('FishNode').fid);
                 removeIndex = i;
                 break;
             }
         }
         if(removeIndex > -1){
-            console.log('##########################');
+            // console.log('##########################');
             _fishList.splice(removeIndex, 1);
         }
     };

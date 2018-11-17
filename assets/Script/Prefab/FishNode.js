@@ -176,7 +176,7 @@ cc.Class({
             this.node.addChild(webNode);
 
             if(bulletUId === Global.GameData.getPlayer().uid){
-                console.log('hit fish' + fishId);
+                // console.log('hit fish' + fishId);
                 Global.SocketController.hitFish(fishId,  (err, data) => {
 
                 });
