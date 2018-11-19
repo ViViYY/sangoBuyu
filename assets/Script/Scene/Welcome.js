@@ -143,7 +143,69 @@ cc.Class({
         this._label.string = '';
     },
 
+    funcStart1 (event, customEventData) {
+        console.log('aaaa 3wx');
+        console.log('cc.sys.platform = ' + cc.sys.platform);
+        console.log('cc.sys.WECHAT_GAME = ' + cc.sys.WECHAT_GAME);
+        if(cc.sys.platform === cc.sys.WECHAT_GAME){
+            wx.cloud.init({
+                env: 'test-097b9b'
+            });
+            console.log('aaaa 55');
+            wx.cloud.callFunction({
+                // 云函数名称
+                name: 'add',
+                // 传给云函数的参数
+                data: {
+                    a: 1,
+                    b: 2,
+                },
+                success: function(res) {
+                    console.log('wx.cloud.callFunction:add 1 : ' + res.result.sum);
+                },
+                fail: console.error
+            })
+
+            console.log('aaaa 66');
+            wx.cloud.callFunction({
+                // 要调用的云函数名称
+                name: 'getUserInfo',
+                // 传递给云函数的参数
+                success: res => {
+                    console.log('wx.cloud.callFunction:add 2 : ' + JSON.stringify(res.result));
+                },
+                fail: err => {
+                    console.log('wx.cloud.callFunction:add 2 err : ' + err);
+                },
+                complete: () => {
+                    console.log('wx.cloud.callFunction: 2  complete ');
+                }
+            })
+            let button = wx.createUserInfoButton({
+                type: 'text',
+                text: '获取用户信息',
+                style: {
+                    left: 10,
+                    top: 76,
+                    width: 200,
+                    height: 40,
+                    lineHeight: 40,
+                    backgroundColor: '#ff0000',
+                    color: '#ffffff',
+                    textAlign: 'center',
+                    fontSize: 16,
+                    borderRadius: 4
+                }
+            });
+            button.onTap((res) => {
+                console.log(res)
+            });
+        }
+    },
+
+
     funcStart (event, customEventData) {
+
         console.log('aaaa 3');
         let loginNode = this.node.getChildByName('loginNode');
         let usernameInput = loginNode.getChildByName('username').getComponent(cc.EditBox);

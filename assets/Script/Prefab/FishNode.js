@@ -175,12 +175,12 @@ cc.Class({
             webNode.setPosition(p_bullet.x - p_fish.x, p_bullet.y - p_fish.y);
             this.node.addChild(webNode);
 
-            if(bulletUId === Global.GameData.getPlayer().uid){
+            // if(bulletUId === Global.GameData.getPlayer().uid){
                 // console.log('hit fish' + fishId);
-                Global.SocketController.hitFish(fishId,  (err, data) => {
+                Global.SocketController.hitFish(bulletUId, fishId,  (err, data) => {
 
                 });
-            }
+            // }
 
         }
     },

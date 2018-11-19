@@ -176,7 +176,12 @@ cc.Class({
             let playerData = data.data;
             console.log('onPlayerExitRoom:' + JSON.stringify(data));
             const player = Global.GameData.getRoomData().getPlayer(playerData.uid);
-            player.getComponent('CannonNode').leave();
+            if(!player){
+                console.warn('[onPlayerExitRoom] playeris not exist:uid = ' + playerData.uid);
+            }
+            if(player){
+                player.getComponent('CannonNode').leave();
+            }
             Global.GameData.getRoomData().removePlayer(playerData.uid);
         });
         //get-notification-'shot'

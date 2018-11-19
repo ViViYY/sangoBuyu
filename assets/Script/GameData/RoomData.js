@@ -35,14 +35,18 @@ const RoomData = function (roomId) {
     };
     //删除玩家
     that.removePlayer = function (uid) {
-        let targetPlayerId;
+        // console.log('[removePlayer]uid = ' + uid);
+        let targetPlayerId = -1;
         for(let i = 0; i < _playerList.length; i++){
             let roomPlayer = _playerList[i];
-            if(roomPlayer && roomPlayer.getComponent('CannonNode').uid == uid){
+            // console.log('[removePlayer]roomPlayer = ' + ' i: ' + roomPlayer.getComponent('CannonNode').uid);
+            if(roomPlayer && roomPlayer.getComponent('CannonNode').uid === uid){
                 targetPlayerId = i;
+                break;
             }
         }
-        if(targetPlayerId){
+        // console.log('[removePlayer]targetPlayerId = ' + targetPlayerId);
+        if(targetPlayerId > -1){
             _playerList.splice(targetPlayerId, 1);
         } else {
             console.warn('RoomData removePlayer error:uid = ' + uid);
@@ -52,6 +56,7 @@ const RoomData = function (roomId) {
     that.getPlayer = function (uid) {
         for(let i = 0; i < _playerList.length; i++){
             let roomPlayer = _playerList[i];
+            // console.log('[getPlayer]roomPlayer = ' + ' i: ' + i + ' uid: ' + roomPlayer.getComponent('CannonNode').uid);
             if(roomPlayer && roomPlayer.getComponent('CannonNode').uid === uid){
                 return roomPlayer;
             }

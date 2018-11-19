@@ -87,8 +87,8 @@ const SocketController = function () {
     that.playerShot = function (rotation, targetFishId, cb) {
         request('player_shot', {rotation:rotation, targetFishId:targetFishId}, cb, true);
     };
-    that.hitFish = function (fishId, cb) {
-        request('hit_fish', {fishId:fishId}, cb, true);
+    that.hitFish = function (uid, fishId, cb) {
+        request('hit_fish', {uid:uid, fishId:fishId}, cb, true);
     };
     that.useSkill = function (skillId, cb) {
         request('use_skill', {skillId:skillId}, cb);
