@@ -76,13 +76,13 @@ cc.Class({
         } else {
             this.labelName.node.color = cc.Color.WHITE;
         }
-        if(seatId === 0){
+        if(seatId === Define.seat.DownLeft){
             this.headbg.node.setPosition(-130, 70);
-        } else if (seatId === 1) {
+        } else if (seatId === Define.seat.DownRight) {
             this.headbg.node.setPosition(130, 70);
-        } else if (seatId === 2) {
+        } else if (seatId === Define.seat.UpLeft) {
             this.headbg.node.setPosition(-130, -70);
-        } else if (seatId === 3) {
+        } else if (seatId === Define.seat.UpRight) {
             this.headbg.node.setPosition(130, -70);
         }
         this._uid = uid;
@@ -96,16 +96,16 @@ cc.Class({
         this._animation.setPosition(0, this._animation.getContentSize().height / 2);
         const visibleSize = cc.view.getVisibleSize();
         switch (this._seatId) {
-            case 0:
+            case Define.seat.DownLeft:
                 this.node.setPosition(-Define.cannonDxToCenter, -visibleSize.height / 2);
                 break;
-            case 1:
+            case Define.seat.DownRight:
                 this.node.setPosition(Define.cannonDxToCenter, -visibleSize.height / 2);
                 break;
-            case 2:
+            case Define.seat.UpLeft:
                 this.node.setPosition(-Define.cannonDxToCenter, visibleSize.height / 2);
                 break;
-            case 3:
+            case Define.seat.UpRight:
                 this.node.setPosition(Define.cannonDxToCenter, visibleSize.height / 2);
                 break;
             default:
@@ -142,6 +142,12 @@ cc.Class({
         }
         this._isShotting = true;
         this._animation.getComponent(cc.Animation).play('cannon' + this._level);
+        if(Global.GameData.getPlayer().uid === this.uid){
+            this.shot(Global.GameData.getPlayer().targetFishId);
+            //send-notification-'shot'
+            cc.director.emit('shot', this.cannonNode.rotation, Global.GameData.getPlayer().targetFishId);
+            // console.log('rotation = ' + this.cannonNode.rotation);
+        }
     },
 
     otherPlayerShotPlay (rotation, targetFishId) {
@@ -150,16 +156,16 @@ cc.Class({
         //刷新炮弹的 角度
         // console.log('otherPlayerShotPlay : ' + rotation);
         switch (this._seatId) {
-            case 0:
+            case Define.seat.DownLeft:
                 this.cannonNode.rotation = rotation;
                 break;
-            case 1:
+            case Define.seat.DownRight:
                 this.cannonNode.rotation = -rotation;
                 break;
-            case 2:
+            case Define.seat.UpLeft:
                 this.cannonNode.rotation = -rotation + 180;
                 break;
-            case 3:
+            case Define.seat.UpRight:
                 this.cannonNode.rotation = rotation + 180;
                 break;
         }
@@ -177,7 +183,9 @@ cc.Class({
     shotEnd() {
         this._isShotting = false;
         if(Global.GameData.getPlayer().uid === this.uid){
-            this.shot(Global.GameData.getPlayer().targetFishId);
+            //this.shot(Global.GameData.getPlayer().targetFishId);
+            //send-notification-'shot'
+            //cc.director.emit('shot', this.cannonNode.rotation, Global.GameData.getPlayer().targetFishId);
         }
     },
 
@@ -196,7 +204,7 @@ cc.Class({
         bulletNode.setPosition(nodePos);
         if(Global.GameData.getPlayer().uid === this.uid){
             //send-notification-'shot'
-            cc.director.emit('shot', this.cannonNode.rotation, Global.GameData.getPlayer().targetFishId);
+            //cc.director.emit('shot', this.cannonNode.rotation, Global.GameData.getPlayer().targetFishId);
         }
         //消耗coin
         this._costCoin();

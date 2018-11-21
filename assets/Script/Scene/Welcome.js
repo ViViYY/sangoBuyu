@@ -210,7 +210,7 @@ cc.Class({
         let loginNode = this.node.getChildByName('loginNode');
         let usernameInput = loginNode.getChildByName('username').getComponent(cc.EditBox);
         let passwordInput = loginNode.getChildByName('password').getComponent(cc.EditBox);
-        Global.SocketController.login(usernameInput.string, passwordInput.string, (err, data) => {
+        Global.SocketController.login(usernameInput.string, passwordInput.string, usernameInput.string, (err, data) => {
             if(err){
                 console.log('login err: ' + err);
                 this._label.string = err;

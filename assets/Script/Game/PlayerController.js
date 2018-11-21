@@ -1,5 +1,6 @@
 import Global from "../Global";
 import Define from './../Define'
+import ButtonSimpleStype from "../Util/ButtonSimpleStyle";
 
 cc.Class({
     extends: cc.Component,
@@ -9,9 +10,12 @@ cc.Class({
             type: cc.Node,
             default: null,
         },
+        _isAutoShot: false,
+        buttonAuto: cc.Node,
     },
 
     onLoad () {
+        this._onEventListener();
         this._skillButtons = {};
         this.sx = 1;
         this.sy = 1;
@@ -81,6 +85,19 @@ cc.Class({
                 buttonSkill2.getComponent('CDButton').registerClickEvent(clickEventHandler);
                 buttonSkill2.active = true;
             });
+            // 自动按钮
+            Global.ComponentFactory.createButtonByAtlas('Prefab/buttonSimple', (buttonPrefab) => {
+                this.buttonAuto = cc.instantiate(buttonPrefab);
+                this.node.addChild(this.buttonAuto);
+                // 按钮样式
+                this.buttonAuto.getComponent('ButtonSimple').changeStyle(ButtonSimpleStype.BLUE);
+                // 设置文本
+                this.buttonAuto.getComponent('ButtonSimple').changeText(Global.LanguageManager.getLanguage(11));
+                //点击事件
+                let clickEventHandlerEasy = Global.ComponentFactory.createClickEventHandler(this.node, 'PlayerController', 'autoShot', 1);
+                this.buttonAuto.getComponent('ButtonSimple').registerClickEvent(clickEventHandlerEasy);
+                this.buttonAuto.setPosition( 100, -visibleSize.height / 2 + this.buttonAuto.getContentSize().height / 2);
+            });
         });
     },
 
@@ -102,6 +119,39 @@ cc.Class({
                 }
             }
         });
+    },
+
+    autoShot (event, customEventData) {
+        Global.SocketController.setAutoShot(customEventData, (err, data) => {
+            if(err){
+                console.log('[Game]playerShot : err : ' + err);
+            }
+            console.log('[Game]playerShot : data : ' + JSON.stringify(data));
+        });
+    },
+    _onEventListener () {
+        //get-notification-'auto-shot'
+        cc.director.on('auto-shot', (auto) => {
+            if(2 === auto && !this._isAutoShot){
+                return;
+            }
+            this.autoShot(null, 2);
+        });
+        //自动攻击
+        Global.SocketController.registerSEventListener('setAutoShot', (data) => {
+            if (data.err) {
+                console.log('[PlayerController]:setAutoShot,err:' + data.err);
+            } else {
+                console.log('[PlayerController]:setAutoShot:' + JSON.stringify(data.data));
+            }
+            console.log('自动攻击:' + data.auto);
+            this._isAutoShot = data.auto === 1 ? true : false;
+            this.buttonAuto.getComponent('ButtonSimple').getComponent(cc.Button).interactable = !this._isAutoShot;
+        });
+    },
+
+    onDestroy () {
+        Global.SocketController.removeSEventListener('setAutoShot');
     },
 
 });

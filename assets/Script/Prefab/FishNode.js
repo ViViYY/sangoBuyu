@@ -70,6 +70,7 @@ cc.Class({
             type: cc.Prefab,
             default: null,
         },
+        _reverse: false,
     },
 
     onLoad () {
@@ -112,13 +113,14 @@ cc.Class({
         }
     },
 
-    syncData (step, hp, maxHp, ice) {
+    syncData (step, hp, maxHp, ice, reverse) {
         if(ice > 1){
             this.skillIceStart(ice);
             return;
         } else if(ice === 0) {
             this.skillIceEnd();
         }
+        this._reverse = reverse === 1;
         this._step = step;
         // console.log('this._step = ' + this._step);
         this._refreshPosition();
@@ -153,6 +155,9 @@ cc.Class({
                 break;
         }
         this.node.setPosition(temp);
+        if(this._reverse){
+            this._animation.rotation = this._animation.rotation - 180;
+        }
     },
 
     playAnimation (actionName) {

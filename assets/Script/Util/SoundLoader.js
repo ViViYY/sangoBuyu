@@ -11,14 +11,14 @@ cc.Class({
             type: cc.Integer,
             default: 0,
             visible() {
-                return (this.isRandom == true);
+                return (this.isRandom);
             },
         },
         endNumber: {
             type: cc.Integer,
             default: 0,
             visible() {
-                return (this.isRandom == true);
+                return (this.isRandom);
             },
         },
         autoLoad: {
@@ -49,6 +49,10 @@ cc.Class({
         }
     },
 
+    onDestroy () {
+        console.log('SoundLoader onDestroy' + this.soundName);
+    },
+
     loadMusic () {
         if(!this.soundName || this.soundName.length < 3){
             console.warn('音乐路径错误 url = ' + url);
@@ -71,7 +75,9 @@ cc.Class({
     },
     play () {
         if(this._clip){
-            cc.audioEngine.play(this._clip, this.isLoop, this.volume);
+            let id = cc.audioEngine.play(this._clip, this.isLoop, this.volume);
+            return {id:id, soundName:this.soundName};
         }
+        return {id:-1, soundName:""};
     },
 });

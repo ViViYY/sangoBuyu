@@ -19,6 +19,12 @@ Define.ColliderType = cc.Enum({
 Define.get = 'get';
 Define.set = 'set';
 Define.both = 'both';
+Define.seat = cc.Enum({
+    DownLeft: 0,
+    DownRight: 1,
+    UpLeft: 2,
+    UpRight: 3
+});
 
 Define.webLifeTime = 300;
 

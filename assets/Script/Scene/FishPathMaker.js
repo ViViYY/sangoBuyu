@@ -32,6 +32,7 @@ cc.Class({
 
 
     onLoad () {
+        this.fishReverse = false;
         Global.FishPathManager.loadPath( () => {
             this._pathPoints = Global.FishPathManager.getPath(10);
             this._init();
@@ -52,10 +53,15 @@ cc.Class({
 
     funcStart (event, customData) {
 
+        this._pathPos.length = 0;
         this.moveRandomBezier();
     },
 
     funcStartDir () {
+        if(this.sid){
+            clearInterval(this.sid);
+            this.sid = null;
+        }
         this._startDir++;
         if(4 === this._startDir){
             this._startDir = 0;
@@ -111,7 +117,7 @@ cc.Class({
     },
 
     _forceStartAndEnd () {
-        const dxy = 300;
+        const dxy = 150;
         let start = this.list[0];
         let fist = this.list[1];
         let last = this.list[this.list.length - 2];
@@ -158,20 +164,33 @@ cc.Class({
     },
 
     funcPath (event, customData) {
+        if(this.sid){
+            return;
+        }
         this._pathIndex = 0;
         let posCur = this._pathPoints[this._pathIndex];
         this._animation.setPosition(cc.v2(posCur[0], posCur[1]));
-
-        let sid = setInterval( () => {
-            this._pathIndex++;
+        this.sid = setInterval( () => {
+            if(!this.fishReverse){
+                this._pathIndex++;
+            } else {
+                this._pathIndex--;
+            }
             if( this._pathIndex >= this._pathPoints.length){
-                clearInterval(sid);
-                return;
+                this.fishReverse = true;
+                this._pathIndex = this._pathPoints.length - 1;
+            } else if( this._pathIndex < 0 ) {
+                this.fishReverse = false;
+                this._pathIndex = 0;
             }
             let posCur = this._pathPoints[this._pathIndex];
             this._animation.setPosition(cc.v2(posCur[0], posCur[1]));
             //rotation
-            this._animation.rotation = posCur[2];
+            if(!this.fishReverse){
+                this._animation.rotation = posCur[2];
+            } else {
+                this._animation.rotation = posCur[2] - 180;
+            }
         }, 5);
 
     },
@@ -195,16 +214,16 @@ cc.Class({
     },
 
     moveRandomBezier () {
-        const time = 3;
+        const time = 4;
         let bezier1 = [this._getListPosition(0), this._getListPosition(1), this._getListPosition(2)];
         let bezier1Action = cc.bezierTo(time, bezier1);
         let bezier2 = [this._getListPosition(3), this._getListPosition(4), this._getListPosition(5)];
         let bezier2Action = cc.bezierTo(time, bezier2);
         let bezier3 = [this._getListPosition(6), this._getListPosition(7), this._getListPosition(8)];
         let bezier3Action = cc.bezierTo(time, bezier3);
-        // let bezier4 = [this._getListPosition(9), this._getListPosition(10), this._getListPosition(11)];
-        // let bezier4Action = cc.bezierTo(time, bezier4);
-        let seq = cc.sequence(bezier1Action, bezier2Action, bezier3Action, cc.callFunc(this.moveBezierEnd.bind(this)));
+        let bezier4 = [this._getListPosition(9), this._getListPosition(10), this._getListPosition(11)];
+        let bezier4Action = cc.bezierTo(time, bezier4);
+        let seq = cc.sequence(bezier1Action, bezier2Action, bezier3Action, bezier4Action, cc.callFunc(this.moveBezierEnd.bind(this)));
 
         this.isMoving = true;
         this._posPre = this._animation.getPosition();

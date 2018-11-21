@@ -72,6 +72,8 @@ cc.Class({
         this.topLayer.height = visibleSize.width;
         this.node.on(cc.Node.EventType.TOUCH_START, (event) => {
             if(this._cannonNode){
+                //send-notification-'shot'
+                cc.director.emit('auto-shot', 2);
                 //检测是否点中鱼
                 const pos = this.node.convertToNodeSpace(event.touch.getLocation());
                 if(0 === Global.GameData.getPlayer().targetFishId){
@@ -168,8 +170,10 @@ cc.Class({
         Global.SocketController.registerSEventListener('player_shot', (data) => {
             let shotData = data.data;
             // console.log('@@onPlayerShot:' + JSON.stringify(shotData));
-            const player = Global.GameData.getRoomData().getPlayer(shotData.shotter);
-            player.getComponent('CannonNode').otherPlayerShotPlay(shotData.rotation, shotData.targetFishId);
+            if(shotData.shotter != Global.GameData.getPlayer().uid || shotData.auto === 1){
+                const player = Global.GameData.getRoomData().getPlayer(shotData.shotter);
+                player.getComponent('CannonNode').otherPlayerShotPlay(shotData.rotation, shotData.targetFishId);
+            }
         });
         //其他玩家离开
         Global.SocketController.registerSEventListener('player_exit', (data) => {
@@ -346,7 +350,7 @@ cc.Class({
                     let player = Global.GameData.getRoomData().getPlayer(_fishData.killer);
                     player.getComponent('CannonNode').award(_fishData.silver, _fishData.gold, fishNode.getPosition());
                 } else {
-                    fishNode.getComponent('FishNode').syncData(_fishData.step, _fishData.hp, _fishData.maxHp, _fishData.ice);
+                    fishNode.getComponent('FishNode').syncData(_fishData.step, _fishData.hp, _fishData.maxHp, _fishData.ice, _fishData.reverse);
                 }
             }
         }

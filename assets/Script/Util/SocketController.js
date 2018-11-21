@@ -66,11 +66,11 @@ const SocketController = function () {
     that.removeSEventListener = function (eventName, cb) {
         _event.off(eventName, cb);
     };
-    that.login = function (username, password, cb) {
+    that.login = function (username, password, nickname, cb) {
         console.log('socket:' + _socket.readyState);
         console.log('socket:' + _socket.state);
         console.log('socket:' + _socket.connected);
-        request('login', {uid:username, password:password}, cb);
+        request('login', {uid:username, password:password, nickname:nickname}, cb);
     };
     that.joinHall = function (cb) {
         request('join_hall', {}, cb);
@@ -92,6 +92,9 @@ const SocketController = function () {
     };
     that.useSkill = function (skillId, cb) {
         request('use_skill', {skillId:skillId}, cb);
+    };
+    that.setAutoShot = function (auto, cb) {
+        request('auto_shot', {auto:auto}, cb);
     };
 
 

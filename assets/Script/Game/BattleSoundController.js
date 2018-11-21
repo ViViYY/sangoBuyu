@@ -73,6 +73,7 @@ cc.Class({
 
     onLoad () {
         this.soundMap = {};
+        this.soundPlayCount = 0;
         this.soundMap['upgrade'] = this.musicUpgradeNode;
         this.soundMap['shot'] = this.musicShotNode;
         this.soundMap['warning'] = this.musicWarningNode;
@@ -90,9 +91,16 @@ cc.Class({
         this.soundMap['fish-dead-11001'] = this.fishNode11001;
         this.soundMap['fish-dead-11101'] = this.fishNode11101;
         cc.director.on('sound',  (data) => {
+            if(this.soundPlayCount >= cc.audioEngine.getMaxAudioInstance()){
+                return;
+            }
             let soundNode = this.soundMap[data];
             if (soundNode) {
-                soundNode.getComponent('SoundLoader').play();
+                this.soundPlayCount++;
+                let obj = soundNode.getComponent('SoundLoader').play();
+                cc.audioEngine.setFinishCallback(obj.id, () => {
+                    this.soundPlayCount--;
+                });
             }
         });
     },
