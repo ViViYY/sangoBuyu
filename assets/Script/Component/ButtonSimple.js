@@ -5,24 +5,24 @@ cc.Class({
     extends: cc.Component,
 
     properties: {
-
+        atlasIcon: {
+            type: cc.SpriteAtlas,
+            default: null,
+        },
     },
 
     changeStyle (style) {
-        Global.ResourcesManager.loadList([style.atlasUrl], Define.resourceType.CCSpriteAtlas, () => {
-            var myAtlas = Global.ResourcesManager.getRes(style.atlasUrl);
-            let frameNormal = myAtlas.getSpriteFrame(style.spriteNormalName);
-            let pressNormal = myAtlas.getSpriteFrame(style.spritePressName);
-            let hoverNormal = myAtlas.getSpriteFrame(style.spriteNormalName);
-            let disabledNormal = myAtlas.getSpriteFrame(style.spriteDisabledName);
-            //改变图片
-            this.node.width = frameNormal.getRect().width;
-            this.node.height = frameNormal.getRect().height;
-            this.node.getComponent(cc.Button).normalSprite = frameNormal;
-            this.node.getComponent(cc.Button).pressedSprite = pressNormal;
-            this.node.getComponent(cc.Button).hoverSprite = hoverNormal;
-            this.node.getComponent(cc.Button).disabledSprite = disabledNormal;
-        });
+        let frameNormal = this.atlasIcon.getSpriteFrame(style.spriteNormalName);
+        let pressNormal = this.atlasIcon.getSpriteFrame(style.spritePressName);
+        let hoverNormal = this.atlasIcon.getSpriteFrame(style.spriteNormalName);
+        let disabledNormal = this.atlasIcon.getSpriteFrame(style.spriteDisabledName);
+        //改变图片
+        this.node.width = frameNormal.getRect().width;
+        this.node.height = frameNormal.getRect().height;
+        this.node.getComponent(cc.Button).normalSprite = frameNormal;
+        this.node.getComponent(cc.Button).pressedSprite = pressNormal;
+        this.node.getComponent(cc.Button).hoverSprite = hoverNormal;
+        this.node.getComponent(cc.Button).disabledSprite = disabledNormal;
     },
 
     changeText (str) {

@@ -1,5 +1,3 @@
-import Global from "../Global";
-import Define from "../Define";
 
 cc.Class({
     extends: cc.Component,
@@ -17,6 +15,14 @@ cc.Class({
             type: cc.Sprite,
             default: null,
         },
+        atlasIcon: {
+            type: cc.SpriteAtlas,
+            default: null,
+        },
+        labelName: {
+            type: cc.Label,
+            default: null,
+        },
         _leftTime: 0,
     },
 
@@ -31,22 +37,19 @@ cc.Class({
         this._useSkill();
     },
 
-    init (skillConfig, sprName1, sprName2, cb) {
-        this._skillConfig = skillConfig;
-        const url1 = 'Texture/' + sprName1;
-        const url2 = 'Texture/' + sprName2;
-        Global.ResourcesManager.loadList([url1, url2], Define.resourceType.CCSpriteFrame, () => {
-            var frame1 = Global.ResourcesManager.getRes(url1);
-            var frame2 = Global.ResourcesManager.getRes(url2);
-            this.node.getComponent(cc.Sprite).spriteFrame = frame1;
-            this.node.width  = frame1.getRect().width;
-            this.node.height  = frame1.getRect().height;
-            this.spr.spriteFrame = frame2;
-            this.bar.spriteFrame = frame1;
-            this.bar.node.width  = this.node.width;
-            this.bar.node.height  = this.node.height;
-            cb();
-        });
+    init (cd, name, sprName1, sprName2, cb) {
+        this.labelName.string = name;
+        this.cd = cd;
+        var frame1 = this.atlasIcon.getSpriteFrame(sprName1);
+        var frame2 = this.atlasIcon.getSpriteFrame(sprName2);
+        this.node.getComponent(cc.Sprite).spriteFrame = frame1;
+        this.node.width  = frame1.getRect().width;
+        this.node.height  = frame1.getRect().height;
+        this.spr.spriteFrame = frame2;
+        this.bar.spriteFrame = frame1;
+        this.bar.node.width  = this.node.width;
+        this.bar.node.height  = this.node.height;
+        cb();
     },
 
     registerClickEvent (clickEventHandler) {
@@ -55,6 +58,9 @@ cc.Class({
 
     getWidth () {
         return this.node.width;
+    },
+    getHeight () {
+        return this.node.height + this.labelName.node.height;
     },
 
     _useSkill () {
@@ -67,7 +73,7 @@ cc.Class({
         }
         this._leftTime -= dt * 1000;
         this._leftTime = Math.max(this._leftTime, 0);
-        this.progressBar.progress = this._leftTime / this._skillConfig.cd;
+        this.progressBar.progress = this._leftTime / this.cd;
         if(this._leftTime === 0){
             this.setEnable();
         }
@@ -80,7 +86,7 @@ cc.Class({
     },
 
     setDisable () {
-        this._leftTime = this._skillConfig.cd;
+        this._leftTime = this.cd;
         this.node.getComponent(cc.Button).enabled = false;
     },
 

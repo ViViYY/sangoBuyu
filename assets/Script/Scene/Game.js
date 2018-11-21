@@ -136,8 +136,6 @@ cc.Class({
                 }
             }
             let mySeatId = Global.GameData.getPlayer().seatId;
-            //bg
-            this._refreshBackgroundRotation();
 
             // console.log('my seat id = ' + mySeatId);
             //确定其他玩家的位置
@@ -179,12 +177,12 @@ cc.Class({
         Global.SocketController.registerSEventListener('player_exit', (data) => {
             let playerData = data.data;
             console.log('onPlayerExitRoom:' + JSON.stringify(data));
-            const player = Global.GameData.getRoomData().getPlayer(playerData.uid);
-            if(!player){
-                console.warn('[onPlayerExitRoom] playeris not exist:uid = ' + playerData.uid);
+            const playerLeave = Global.GameData.getRoomData().getPlayer(playerData.uid);
+            if(!playerLeave){
+                console.warn('[onPlayerExitRoom] player is not exist:uid = ' + playerData.uid);
             }
-            if(player){
-                player.getComponent('CannonNode').leave();
+            if(playerLeave){
+                playerLeave.getComponent('CannonNode').leave();
             }
             Global.GameData.getRoomData().removePlayer(playerData.uid);
         });
@@ -224,23 +222,16 @@ cc.Class({
         cc.audioEngine.stopAll();
     },
 
-    //刷新地图方位
-    _refreshBackgroundRotation () {
-        this.bgLayer.scaleX = this.sx;
-        this.bgLayer.scaleY = this.sy;
-    },
-
     _loadBackground () {
         let url = 'Image/game_bg';
-        let visibleSize = cc.view.getVisibleSize();
         let winSize = cc.view.getFrameSize();
-        if(cc.sys.platform == cc.sys.ANDROID){
+        if(cc.sys.platform === cc.sys.ANDROID){
             winSize = cc.view.getFrameSize();
-        } else if(cc.sys.platform == cc.sys.IPHONE){
+        } else if(cc.sys.platform === cc.sys.IPHONE){
             winSize = cc.view.getFrameSize();
-        } else if(cc.sys.platform == cc.sys.WECHAT_GAME){
+        } else if(cc.sys.platform === cc.sys.WECHAT_GAME){
             winSize = cc.view.getCanvasSize();
-        } else if(cc.sys.platform == cc.sys.MOBILE_BROWSER){
+        } else if(cc.sys.platform === cc.sys.MOBILE_BROWSER){
             winSize = cc.view.getCanvasSize();
         } else {
             winSize = cc.view.getFrameSize();
@@ -251,21 +242,6 @@ cc.Class({
             let bg = this._bgNode.addComponent(cc.Sprite);
             var obj = Global.ResourcesManager.getRes(url);
             bg.spriteFrame = obj;
-
-            Global.ComponentFactory.createButtonByAtlas('Prefab/buttonSimple', (buttonPrefab) => {
-                // 返回按钮
-                var buttonBack = cc.instantiate(buttonPrefab);
-                this.topLayer.addChild(buttonBack);
-                buttonBack.setPosition( (- visibleSize.width / 2 + buttonBack.getContentSize().width / 2) * this.sx, (visibleSize.height / 2 - buttonBack.getContentSize().height / 2) * this.sy);
-                // 按钮样式
-                buttonBack.getComponent('ButtonSimple').changeStyle(ButtonSimpleStype.BACK);
-                // 设置文本
-                buttonBack.getComponent('ButtonSimple').changeText('');
-                //点击事件
-                let clickEventHandlerEasy = Global.ComponentFactory.createClickEventHandler(this.node, 'Game', '_funcBack');
-                buttonBack.getComponent('ButtonSimple').registerClickEvent(clickEventHandlerEasy);
-            });
-
             this._onEventListener();
         });
     },

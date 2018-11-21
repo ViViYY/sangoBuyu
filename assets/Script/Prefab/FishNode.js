@@ -237,8 +237,6 @@ cc.Class({
             this.animIce = cc.instantiate(this.animIcePrefab);
             animaNode.addChild(this.animIce);
             this.node.parent.addChild(animaNode);
-            this.animIce.scaleX = 0.1;
-            this.animIce.scaleY = 0.1;
             this.animIce.parent.zIndex = 2000;
         }
         if(this.icePlaying){

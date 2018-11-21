@@ -41,8 +41,8 @@
     },
     "_scale": {
       "__type__": "cc.Vec3",
-      "x": 0.53125,
-      "y": 0.53125,
+      "x": 0.5595550537109375,
+      "y": 0.5595550537109375,
       "z": 1
     },
     "_quat": {
@@ -2220,8 +2220,6 @@
     "_bgNode": null,
     "_cannonNode": null,
     "_cannonLevel": 1,
-    "_cannonList": [],
-    "_fishList": [],
     "_id": "7cSxTt8JtF0ZhULAXyUoU/"
   },
   {
@@ -2235,6 +2233,7 @@
     "topLayer": {
       "__id__": 8
     },
+    "_isAutoShot": false,
     "_id": "74QZ61QPtPLaRYeOuHD7FO"
   }
 ]

@@ -21,6 +21,10 @@ cc.Class({
             default: null,
         },
         headbg: {
+            type: cc.Node,
+            default: null,
+        },
+        head: {
             type: cc.Sprite,
             default: null,
         },
@@ -59,6 +63,8 @@ cc.Class({
             set (val) {this._sealed = val;},
         },
         _isShotting: false,
+
+        _headUrl: 'https://ss1.bdstatic.com/70cFvXSh_Q1YnxGkpoWK1HF6hhy/it/u=373849174,2079142017&fm=27&gp=0.jpg',
     },
 
     onLoad () {
@@ -77,13 +83,13 @@ cc.Class({
             this.labelName.node.color = cc.Color.WHITE;
         }
         if(seatId === Define.seat.DownLeft){
-            this.headbg.node.setPosition(-130, 70);
+            this.headbg.setPosition(-130, 72);
         } else if (seatId === Define.seat.DownRight) {
-            this.headbg.node.setPosition(130, 70);
+            this.headbg.setPosition(130, 72);
         } else if (seatId === Define.seat.UpLeft) {
-            this.headbg.node.setPosition(-130, -70);
+            this.headbg.setPosition(-130, -40);
         } else if (seatId === Define.seat.UpRight) {
-            this.headbg.node.setPosition(130, -70);
+            this.headbg.setPosition(130, -40);
         }
         this._uid = uid;
         this._level = level;
@@ -112,6 +118,17 @@ cc.Class({
                 break;
         }
         this.changeRotation(cc.view.getVisibleSize().width / 2, cc.view.getVisibleSize().height / 2);
+        cc.loader.load({
+            url: this._headUrl,
+            type: 'png'
+        }, (err, texture) => {
+            if (err) console.error(err);
+            let oldWidth = this.head.node.width;
+            let oldHeight = this.head.node.height;
+            this.head.spriteFrame = new cc.SpriteFrame(texture);
+            this.head.node.scaleX = oldWidth / this.head.node.width;
+            this.head.node.scaleY = oldHeight / this.head.node.height;
+        });
     },
 
     startShot () {
@@ -278,8 +295,8 @@ cc.Class({
         this.node.parent.addChild(awardNode);
         // action
         let targetPos = this.node.getPosition();
-        targetPos.x += this.headbg.node.x;
-        targetPos.y += this.headbg.node.y;
+        targetPos.x += this.headbg.x;
+        targetPos.y += this.headbg.y;
         let action = cc.moveTo(1, targetPos);
         let delay = cc.delayTime(Math.random() * 0.5 + 0.5);
         let seq = cc.sequence(delay, action, cc.callFunc( () => {

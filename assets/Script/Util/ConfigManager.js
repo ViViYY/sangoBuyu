@@ -52,7 +52,7 @@ const ConfigManager = function () {
             if (err) {
                 console.error(' skill config load, path + ' + jsonUrl + ' - err : ' + err);
             } else {
-                // console.log(' skill config load success: ' + jsonUrl + ' , res: ' + JSON.stringify(res.json) );
+                console.log(' skill config load success: ' + jsonUrl + ' , res: ' + JSON.stringify(res.json) );
                 for(let i = 0; i < res.json.length; i++){
                     let _line = res.json[i];
                     _skillConfigMap[_line['id']] = _line;

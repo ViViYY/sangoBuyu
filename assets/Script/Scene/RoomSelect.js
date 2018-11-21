@@ -25,11 +25,11 @@ cc.Class({
         this.sx = 1;
         this.sy = 1;
         let visibleSize;
-        if(cc.sys.platform == cc.sys.ANDROID){
+        if(cc.sys.platform === cc.sys.ANDROID){
             visibleSize = cc.view.getFrameSize();
-        } else if(cc.sys.platform == cc.sys.IPHONE){
+        } else if(cc.sys.platform === cc.sys.IPHONE){
             visibleSize = cc.view.getFrameSize();
-        } else if(cc.sys.platform == cc.sys.WECHAT_GAME){
+        } else if(cc.sys.platform === cc.sys.WECHAT_GAME){
             visibleSize = cc.view.getCanvasSize();
         } else if(cc.sys.isBrowser){
             visibleSize = cc.view.getCanvasSize();

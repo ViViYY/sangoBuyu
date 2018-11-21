@@ -11,7 +11,7 @@ Define.resourceType = cc.Enum({
     CCFont: 4,
     CCTexture: 5,
 });
-Define.normalFont = 'minijz';
+Define.normalFont = 'ff';
 Define.ColliderType = cc.Enum({
     Bullet: 0,
     Fish: 1,
