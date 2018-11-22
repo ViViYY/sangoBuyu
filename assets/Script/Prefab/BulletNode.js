@@ -41,6 +41,17 @@ cc.Class({
 
     onLoad () {
         this.logOpen = false;
+        if(cc.sys.platform === cc.sys.ANDROID){
+            this.visibleSize = cc.view.getFrameSize();
+        } else if(cc.sys.platform === cc.sys.IPHONE){
+            this.visibleSize = cc.view.getFrameSize();
+        } else if(cc.sys.platform === cc.sys.WECHAT_GAME){
+            this.visibleSize = cc.view.getCanvasSize();
+        } else if(cc.sys.isBrowser){
+            this.visibleSize = cc.view.getCanvasSize();
+        } else {
+            this.visibleSize = cc.view.getVisibleSize();
+        }
     },
 
     onDestroy () {
@@ -83,10 +94,10 @@ cc.Class({
         let dy = this.speed * dt * Math.cos(angle / 180 * Math.PI);
         this.node.setPosition(this.node.getPosition().x + dx, this.node.getPosition().y + dy);
         let dd = 30;
-        if(this.node.getPosition().y < -cc.view.getVisibleSize().height / 2 - dd || this.node.getPosition().y > cc.view.getVisibleSize().height / 2 + dd){
+        if(this.node.getPosition().y < -this.visibleSize.height / 2 - dd || this.node.getPosition().y > this.visibleSize.height / 2 + dd){
             this.node.destroy();
         }
-        if(this.node.getPosition().x < -cc.view.getVisibleSize().width / 2 - dd || this.node.getPosition().x > cc.view.getVisibleSize().width / 2 + dd){
+        if(this.node.getPosition().x < -this.visibleSize.width / 2 - dd || this.node.getPosition().x > this.visibleSize.width / 2 + dd){
             this.node.destroy();
         }
     },

@@ -63,8 +63,6 @@ cc.Class({
             set (val) {this._sealed = val;},
         },
         _isShotting: false,
-
-        _headUrl: 'https://ss1.bdstatic.com/70cFvXSh_Q1YnxGkpoWK1HF6hhy/it/u=373849174,2079142017&fm=27&gp=0.jpg',
     },
 
     onLoad () {
@@ -75,8 +73,9 @@ cc.Class({
         // console.log('CannonNode onDestroy');
     },
 
-    initCannon (uid, nickname, silver, level, seatId) {
+    initCannon (uid, nickname, avatarUrl, silver, level, seatId) {
         this.labelName.string = nickname;
+        this._avatarUrl = avatarUrl;
         if(0 === seatId){
             this.labelName.node.color = cc.Color.GREEN;
         } else {
@@ -119,15 +118,18 @@ cc.Class({
         }
         this.changeRotation(cc.view.getVisibleSize().width / 2, cc.view.getVisibleSize().height / 2);
         cc.loader.load({
-            url: this._headUrl,
+            url: this._avatarUrl,
             type: 'png'
         }, (err, texture) => {
-            if (err) console.error(err);
-            let oldWidth = this.head.node.width;
-            let oldHeight = this.head.node.height;
-            this.head.spriteFrame = new cc.SpriteFrame(texture);
-            this.head.node.scaleX = oldWidth / this.head.node.width;
-            this.head.node.scaleY = oldHeight / this.head.node.height;
+            if (err) {
+                console.error("#####cc.loader.load:" + err);
+            } else {
+                let oldWidth = this.head.node.width;
+                let oldHeight = this.head.node.height;
+                this.head.spriteFrame = new cc.SpriteFrame(texture);
+                this.head.node.scaleX = oldWidth / this.head.node.width;
+                this.head.node.scaleY = oldHeight / this.head.node.height;
+            }
         });
     },
 
@@ -242,7 +244,7 @@ cc.Class({
         this._animation.setPosition(0, this._animation.getContentSize().height / 2);
         this._isShotting = false;
         //玩家升级音效
-        if(this._uid == Global.GameData.getPlayer().uid){
+        if(this._uid === Global.GameData.getPlayer().uid){
             cc.director.emit('sound', 'levelUp');
         }
     },
@@ -277,7 +279,7 @@ cc.Class({
         this._silver += silver;
         this.labelCoin.string = this._silver;
         //音效
-        if(this._uid == Global.GameData.getPlayer().uid){
+        if(this._uid === Global.GameData.getPlayer().uid){
             cc.director.emit('sound', 'upgrade');
         }
     },

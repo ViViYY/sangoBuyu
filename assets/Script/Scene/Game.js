@@ -43,9 +43,11 @@ cc.Class({
         this.sx = 1;
         this.sy = 1;
         let visibleSize;
-        if(cc.sys.platform == cc.sys.ANDROID){
+        if(cc.sys.platform === cc.sys.ANDROID){
             visibleSize = cc.view.getFrameSize();
-        } else if(cc.sys.platform == cc.sys.WECHAT_GAME){
+        } else if(cc.sys.platform === cc.sys.IPHONE){
+            visibleSize = cc.view.getFrameSize();
+        } else if(cc.sys.platform === cc.sys.WECHAT_GAME){
             visibleSize = cc.view.getCanvasSize();
         } else if(cc.sys.isBrowser){
             visibleSize = cc.view.getCanvasSize();
@@ -70,7 +72,7 @@ cc.Class({
         // console.log("this.sy:" + this.sy);
         this.topLayer.width = visibleSize.width;
         this.topLayer.height = visibleSize.width;
-        this.node.on(cc.Node.EventType.TOUCH_START, (event) => {
+        this.topLayer.on(cc.Node.EventType.TOUCH_START, (event) => {
             if(this._cannonNode){
                 //send-notification-'shot'
                 cc.director.emit('auto-shot', 2);
@@ -92,12 +94,12 @@ cc.Class({
                 this._cannonNode.getComponent('CannonNode').startShot();
             }
         });
-        this.node.on(cc.Node.EventType.TOUCH_MOVE, (event) => {
+        this.topLayer.on(cc.Node.EventType.TOUCH_MOVE, (event) => {
             if(this._cannonNode){
                 this._cannonNode.getComponent('CannonNode').changeRotation(event.touch.getLocation().x, event.touch.getLocation().y);
             }
         });
-        this.node.on(cc.Node.EventType.TOUCH_END, (event) => {
+        this.topLayer.on(cc.Node.EventType.TOUCH_END, (event) => {
             if(this._cannonNode){
                 this._cannonNode.getComponent('CannonNode').endShot();
             }
@@ -117,10 +119,11 @@ cc.Class({
                 let player_add = data.data;
                 const mySeatId = Global.GameData.getPlayer().seatId;
                 let cannonSeatId = player_add.seatId;
-                console.log('player seat id = ' + cannonSeatId);
+                console.log('mySeatId = ' + mySeatId);
+                console.log('cannonSeatId = ' + cannonSeatId);
                 let finalSeatId = SeatMap[mySeatId][cannonSeatId];
                 console.log('final seat id = ' + finalSeatId);
-                this._loadCannon(player_add.uid, player_add.nickname, player_add.silver, player_add.level, finalSeatId);
+                this._loadCannon(player_add.uid, player_add.nickname, player_add.avatarUrl, player_add.silver, player_add.level, finalSeatId);
             }
         });
         //初始化房间数据
@@ -145,7 +148,7 @@ cc.Class({
                 // console.log('player seat id = ' + cannonSeatId);
                 let finalSeatId = SeatMap[mySeatId][cannonSeatId];
                 // console.log('final seat id = ' + finalSeatId);
-                this._loadCannon(player_room.uid, player_room.nickname, player_room.silver, player_room.level, finalSeatId);
+                this._loadCannon(player_room.uid, player_room.nickname, player_room.avatarUrl, player_room.silver, player_room.level, finalSeatId);
             }
             let roomFishList = data.fishList;
             for(let i = 0; i < roomFishList.length; i++){
@@ -222,6 +225,12 @@ cc.Class({
         cc.audioEngine.stopAll();
     },
 
+    //刷新地图方位
+    _refreshBackgroundRotation () {
+        this.bgLayer.scaleX = this.sx;
+        this.bgLayer.scaleY = this.sy;
+    },
+
     _loadBackground () {
         let url = 'Image/game_bg';
         let winSize = cc.view.getFrameSize();
@@ -242,6 +251,8 @@ cc.Class({
             let bg = this._bgNode.addComponent(cc.Sprite);
             var obj = Global.ResourcesManager.getRes(url);
             bg.spriteFrame = obj;
+            //bg
+            this._refreshBackgroundRotation();
             this._onEventListener();
         });
     },
@@ -259,15 +270,15 @@ cc.Class({
         });
     },
 
-    _loadCannon (_uid, _nickname, _silver, _level, _seatId) {
+    _loadCannon (_uid, _nickname, _avatarUrl, _silver, _level, _seatId) {
         let url = 'Prefab/cannonNode';
         Global.ResourcesManager.loadList([url], Define.resourceType.CCPrefab, () => {
             let cannonNodePrefab = Global.ResourcesManager.getRes(url);
             let cannonNode = cc.instantiate(cannonNodePrefab);
             this.cannonLayer.addChild(cannonNode);
-            cannonNode.getComponent('CannonNode').initCannon(_uid, _nickname, _silver, _level, _seatId);
+            cannonNode.getComponent('CannonNode').initCannon(_uid, _nickname, _avatarUrl, _silver, _level, _seatId);
             Global.GameData.getRoomData().addPlayer(cannonNode);
-            if(_uid == Global.GameData.player.uid){
+            if(_uid === Global.GameData.player.uid){
                 this._cannonNode = cannonNode;
             }
         });

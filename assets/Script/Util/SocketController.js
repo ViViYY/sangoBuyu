@@ -66,11 +66,11 @@ const SocketController = function () {
     that.removeSEventListener = function (eventName, cb) {
         _event.off(eventName, cb);
     };
-    that.login = function (username, password, nickname, cb) {
+    that.login = function (username, password, nickname, avatarUrl, cb) {
         console.log('socket:' + _socket.readyState);
         console.log('socket:' + _socket.state);
         console.log('socket:' + _socket.connected);
-        request('login', {uid:username, password:password, nickname:nickname}, cb);
+        request('login', {uid:username, password:password, nickname:nickname, avatarUrl:avatarUrl}, cb);
     };
     that.joinHall = function (cb) {
         request('join_hall', {}, cb);

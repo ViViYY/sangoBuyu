@@ -77,6 +77,7 @@ cc.Class({
         this._isDead = false;
         this.logOpen = false;
         this.hpBar.node.zIndex = 200;
+        this.hpBar.node.active = Define.showHPBar;
     },
     onDestroy () {
         // console.log('FishNode onDestroy');
@@ -124,7 +125,9 @@ cc.Class({
         this._step = step;
         // console.log('this._step = ' + this._step);
         this._refreshPosition();
-        this.hpBar.progress = hp / maxHp;
+        if(Define.showHPBar){
+            this.hpBar.progress = hp / maxHp;
+        }
     },
 
     _refreshPosition () {
@@ -197,7 +200,9 @@ cc.Class({
         this.skillIceEnd();
         let bc = this._animation.getComponent(cc.BoxCollider);
         bc.destroy();
-        this.hpBar.progress = 0;
+        if(Define.showHPBar){
+            this.hpBar.progress = 0;
+        }
         this._isDead = true;
         this.playAnimation('capture');
         //击杀音效

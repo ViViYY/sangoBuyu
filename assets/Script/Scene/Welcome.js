@@ -3,6 +3,7 @@ import ButtonSimpleStype from './../Util/ButtonSimpleStyle'
 import Define from './../Define'
 
 // window.io = require('src/assets/Script/Lib/socket.io.7fa61.js');
+// com.xgame.happer
 
 cc.Class({
     extends: cc.Component,
@@ -210,7 +211,8 @@ cc.Class({
         let loginNode = this.node.getChildByName('loginNode');
         let usernameInput = loginNode.getChildByName('username').getComponent(cc.EditBox);
         let passwordInput = loginNode.getChildByName('password').getComponent(cc.EditBox);
-        Global.SocketController.login(usernameInput.string, passwordInput.string, usernameInput.string, (err, data) => {
+        let avatarUrl = 'https://ss1.bdstatic.com/70cFvXSh_Q1YnxGkpoWK1HF6hhy/it/u=373849174,2079142017&fm=27&gp=0.jpg';
+        Global.SocketController.login(usernameInput.string, passwordInput.string, usernameInput.string, avatarUrl, (err, data) => {
             if(err){
                 console.log('login err: ' + err);
                 this._label.string = err;
