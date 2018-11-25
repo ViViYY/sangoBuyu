@@ -75,7 +75,11 @@ cc.Class({
 
     initCannon (uid, nickname, avatarUrl, silver, level, seatId) {
         this.labelName.string = nickname;
-        this._avatarUrl = avatarUrl;
+        if(avatarUrl){
+            this._avatarUrl = avatarUrl;
+        } else {
+            this._avatarUrl = 'https://ss1.bdstatic.com/70cFvXSh_Q1YnxGkpoWK1HF6hhy/it/u=373849174,2079142017&fm=27&gp=0.jpg';
+        }
         if(0 === seatId){
             this.labelName.node.color = cc.Color.GREEN;
         } else {
@@ -117,6 +121,7 @@ cc.Class({
                 break;
         }
         this.changeRotation(cc.view.getVisibleSize().width / 2, cc.view.getVisibleSize().height / 2);
+        console.log('trst 2');
         cc.loader.load({
             url: this._avatarUrl,
             type: 'png'
@@ -124,6 +129,7 @@ cc.Class({
             if (err) {
                 console.error("#####cc.loader.load:" + err);
             } else {
+                console.log('trst 1');
                 let oldWidth = this.head.node.width;
                 let oldHeight = this.head.node.height;
                 this.head.spriteFrame = new cc.SpriteFrame(texture);

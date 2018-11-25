@@ -67,9 +67,13 @@ cc.Class({
         // console.log('加载音乐:' + url);
         cc.loader.loadRes(url, cc.AudioClip, (err, clip) => {
             // console.log('加载音乐 完成：' + url);
-            this._clip = clip;
-            if(this.autoPlay){
-                this.play();
+            if(err){
+                console.log('[SoundLoader] err: ' + err);
+            } else {
+                this._clip = clip;
+                if(this.autoPlay){
+                    this.play();
+                }
             }
         });
     },

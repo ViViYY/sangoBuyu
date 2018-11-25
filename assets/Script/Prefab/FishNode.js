@@ -2,7 +2,7 @@ import Global from './../Global';
 import Define from './../Define';
 
 const FISH_KIND_LIST_INDEX = {10101:0, 10201:1, 10301:2, 10401:3, 10501:4, 10601:5, 10701:6, 10801:7, 10802:8,
-                                10901:9, 10902:10, 11001:11, 11101:12, 11102:13};
+                                10901:9, 11001:10, 11101:11};
 
 cc.Class({
     extends: cc.Component,

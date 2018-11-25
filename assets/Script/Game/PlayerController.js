@@ -67,8 +67,7 @@ cc.Class({
         let spaceEnough = false;
         console.log('frameSize = ' + frameSize);
         console.log('visibleSize = ' + visibleSize);
-        console.log('this.sx = ' + this.sx);
-        console.log('a = ' + (frameSize.width / 2 - (Define.cannonDxToCenter + 175) * this.sx));
+        console.log('this.sx1 = ' + this.sx1);
         if(frameSize.width / 2 - (Define.cannonDxToCenter + 175) * this.sx1 > 100){
             spaceEnough = true;
         }

@@ -343,16 +343,10 @@
         "__uuid__": "dd23b9b4-91d4-4fb8-83d3-3b8dcec1c986"
       },
       {
-        "__uuid__": "bfe175f2-6638-4896-ada1-83fc99468d04"
-      },
-      {
         "__uuid__": "5cd611e9-ab61-48f6-b77f-a71715aec6ce"
       },
       {
         "__uuid__": "dc3ab41e-dd39-48b0-be7d-039fdd4ef544"
-      },
-      {
-        "__uuid__": "ffed978e-101e-4a63-bf70-07563cf16659"
       }
     ],
     "webNodePrefab": {
@@ -375,6 +369,7 @@
     "animIcePrefab": {
       "__uuid__": "6f113a60-7509-4d98-9aa8-4e14e6ac6463"
     },
+    "_reverse": false,
     "_id": ""
   },
   {

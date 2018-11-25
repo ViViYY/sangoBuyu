@@ -2,7 +2,7 @@ import Global from './../Global'
 import ButtonSimpleStype from './../Util/ButtonSimpleStyle'
 import Define from './../Define'
 
-// window.io = require('src/assets/Script/Lib/socket.io.7fa61.js');
+// window.io = require('src/assets/Script/Lib/socket.io.7e6f9.js');
 // com.xgame.happer
 
 cc.Class({
@@ -13,7 +13,7 @@ cc.Class({
             type: cc.Node,
             default: null,
         },
-        _label: {
+        messageLabel: {
             type: cc.Label,
             default: null,
         },
@@ -138,8 +138,8 @@ cc.Class({
         loginNode.opacity = 0;
         let act = cc.fadeIn(1).easing(cc.easeSineOut());
         loginNode.runAction(act);
-        this._label = loginNode.getChildByName('label').getComponent(cc.Label);
-        this._label.string = '';
+        this.messageLabel = loginNode.getChildByName('label').getComponent(cc.Label);
+        this.messageLabel.string = '';
     },
 
 
@@ -219,10 +219,10 @@ cc.Class({
         Global.SocketController.login(usernameInput.string, passwordInput.string, usernameInput.string, avatarUrl, (err, data) => {
             if(err){
                 console.log('login err: ' + err);
-                this._label.string = err;
+                this.messageLabel.string = err;
             } else {
                 console.log('login info: ' + JSON.stringify(data));
-                this._label.string = Global.LanguageManager.getLanguage(5);
+                this.messageLabel.string = Global.LanguageManager.getLanguage(5);
                 //初始化用户数据
                 Global.GameData.initPlayer(data);
                 //跳过选择房间步骤，直接接受服务器房间信息登陆房间
