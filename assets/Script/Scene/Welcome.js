@@ -27,13 +27,13 @@ cc.Class({
         const windowSize = cc.winSize;
         console.log('cc.sys.platform = ' + cc.sys.platform);
         console.log('cc.sys.isBrowser = ' + cc.sys.isBrowser);
-        if(cc.sys.platform == cc.sys.ANDROID){
+        if(cc.sys.platform === cc.sys.ANDROID){
             jsb.reflection.callStaticMethod("org/cocos2dx/javascript/AppActivity", "print", "(Ljava/lang/String;II)V", "visibleSize", visibleSize.width, visibleSize.height);
             jsb.reflection.callStaticMethod("org/cocos2dx/javascript/AppActivity", "print", "(Ljava/lang/String;II)V", "frameSize", frameSize.width, frameSize.height);
             jsb.reflection.callStaticMethod("org/cocos2dx/javascript/AppActivity", "print", "(Ljava/lang/String;II)V", "designSize", designSize.width, designSize.height);
             jsb.reflection.callStaticMethod("org/cocos2dx/javascript/AppActivity", "print", "(Ljava/lang/String;II)V", "canvasSize", canvasSize.width, canvasSize.height);
             jsb.reflection.callStaticMethod("org/cocos2dx/javascript/AppActivity", "print", "(Ljava/lang/String;II)V", "windowSize", windowSize.width, windowSize.height);
-        } else if(cc.sys.platform == cc.sys.WECHAT_GAME){
+        } else if(cc.sys.platform === cc.sys.WECHAT_GAME){
 
         } else {
             console.log("visibleSize:" + visibleSize.width + ' - ' + visibleSize.height);
