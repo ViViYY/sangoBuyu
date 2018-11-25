@@ -1,4 +1,5 @@
 const Define = {};
+// Define.serverUrl = 'http://192.168.56.101:3000';
 Define.serverUrl = 'http://192.168.31.155:3000';
 // Define.serverUrl = 'http://121.40.125.46:3000';
 // Define.serverUrl = 'http://localhost:3000';

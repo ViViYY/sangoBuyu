@@ -14,11 +14,12 @@ const SocketController = function () {
             return;
         }
         _socketInit = true;
-        _socket = io(Define.serverUrl);
+        // _socket = io(Define.serverUrl);
+        _socket = io.connect(Define.serverUrl);
         console.log('请求连接服务器');
         _socket.on('welcome', function () {
             console.log('server welcome');
-            cc.director.emit('connect_Success');
+            cc.director.emit('connect_success');
         });
         _socket.on('notify', function (data) {
             let _msg = data.msg;
@@ -26,6 +27,9 @@ const SocketController = function () {
             let _data = data.data;
             if(_msg != 'syncGameData' && _msg != 'fishCreate' && _msg != 'player_shot'){
                 console.log(' get server msg = ' + _msg + ', callbackIndex =  ' + _callbackIndex + ' , data =  ' + JSON.stringify(_data));
+            }
+            if(_msg === 'message'){
+                console.log('[socket]message:' + _data.msg);
             }
             _event.fire(_msg, _data);
             if(_callbackIndex){
@@ -39,17 +43,42 @@ const SocketController = function () {
                 }
             }
         });
+        _socket.on('connect', function () {
+            console.log('[socket]connect......');
+        });
+        _socket.on('connecting', function () {
+            console.log('[socket]connecting......');
+        });
         _socket.on('disconnect', function () {
-            console.log('与服务器断开连接');
-            Global.GameData.clean();
-            //todo 重置数据
+            console.log('[socket]disconnect......');
+            cc.director.emit('connect_disconnect');
+            // Global.GameData.clean();
+            // todo 重置数据
             cc.director.loadScene('welcome');
+            console.log('[socket]disconnect to connect');
+            _socket.connect(Define.serverUrl);
+        });
+        _socket.on('connect_failed', function () {
+            console.log('[socket]connect_failed......');
+        });
+        _socket.on('error', function () {
+            console.log('[socket]error......');
+        });
+        _socket.on('connect_failed', function () {
+            console.log('[socket]connect......');
+        });
+        _socket.on('reconnecting', function () {
+            console.log('[socket]reconnecting......');
         });
         _socket.on('reconnect', function () {
-            console.log('重新连接成功');
+            console.log('[socket]重新连接成功......');
         });
     };
     const notify = function (msg, data, noLog) {
+        if(!_socket.connected){
+            console.log('[SocketController]notify: socket is not connect msg: ' + msg);
+            return;
+        }
         if(!noLog) console.log(' notify to server msg = ' + msg + ', callbackIndex =  ' + _callbackIndex + ' , data =  ' + JSON.stringify(data));
         _socket.emit('notify', {msg:msg, callbackIndex:_callbackIndex, data:data});
         _callbackIndex++;

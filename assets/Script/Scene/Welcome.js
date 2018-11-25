@@ -79,7 +79,8 @@ cc.Class({
         // console.log("this.sx:" + this.sx);
         // console.log("this.sy:" + this.sy);
 
-        cc.director.on('connect_Success', this._connectServerSuccess, this);
+        cc.director.on('connect_success', this._showLoginNode, this);
+        cc.director.on('connect_disconnect', this._hideLoginNode, this);
         // 已经登陆过
         if(Global.GameData && Global.GameData.player && Global.GameData.player.uid){
             this._loadBackground ();
@@ -92,12 +93,9 @@ cc.Class({
         }
     },
 
-    _connectServerSuccess () {
-        this._showLoginNode();
-    },
-
     onDestroy () {
-        cc.director.off('connect_Success', this._connectServerSuccess, this);
+        cc.director.off('connect_success', this._showLoginNode, this);
+        cc.director.off('connect_disconnect', this._hideLoginNode, this);
     },
 
     _loadBackground () {
@@ -142,6 +140,12 @@ cc.Class({
         loginNode.runAction(act);
         this._label = loginNode.getChildByName('label').getComponent(cc.Label);
         this._label.string = '';
+    },
+
+
+    _hideLoginNode () {
+        let loginNode = this.node.getChildByName('loginNode');
+        loginNode.active = false;
     },
 
     funcStart1 (event, customEventData) {
