@@ -47,6 +47,7 @@ cc.Class({
     },
 
     onLoad () {
+        console.log('asdasdsfdsfsdfsddf');
         this._showInfo();
         this.sx = 1;
         this.sy = 1;

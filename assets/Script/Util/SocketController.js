@@ -56,7 +56,9 @@ const SocketController = function () {
             // todo 重置数据
             cc.director.loadScene('welcome');
             console.log('[socket]disconnect to connect');
-            _socket.connect(Define.serverUrl);
+            setTimeout(function () {
+                _socket.connect(Define.serverUrl);
+            }, 1000);
         });
         _socket.on('connect_failed', function () {
             console.log('[socket]connect_failed......');
@@ -124,6 +126,9 @@ const SocketController = function () {
     };
     that.setAutoShot = function (auto, cb) {
         request('auto_shot', {auto:auto}, cb);
+    };
+    that.shareCoinSuccess = function (type, cb) {
+        request('share_coin', {type:type}, cb);
     };
 
 

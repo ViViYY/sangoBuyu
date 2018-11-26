@@ -72,7 +72,10 @@ const GameData = function () {
 
     that.clean = function () {
         console.log('GameData clean');
-
+        _player = PlayerData({uid:'', nickname:'', vip:0, level:0, exp:0, silver:0, gold:0});
+        _room = RoomData(0);
+        _playerNumbetInSimpleRoom = -1;
+        _playerNumbetInHardRoom = -1;
     };
 
     return that;

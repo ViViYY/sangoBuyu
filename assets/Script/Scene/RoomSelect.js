@@ -56,6 +56,44 @@ cc.Class({
         this._loadBackground();
         cc.sys.garbageCollect();
         console.log('garbageCollects');
+        if(cc.sys.platform === cc.sys.WECHAT_GAME){
+            wx.showShareMenu({
+                withShareTicket: true,
+                success: function (res) {
+                    // 分享成功
+                    console.log('shareMenu share success')
+                    console.log('分享'+JSON.stringify(res))
+                },
+                fail: function (res) {
+                    // 分享失败
+                    console.log(res)
+                }
+            });
+            wx.onShareAppMessage(function () {
+                return {
+                    title: '这里是捕鱼小程序',
+                    imageURL: canvas.toTempFilePathSync({
+                        destWidth: 500,
+                        destHeight: 400
+                    }),
+                    success: function (res) {
+                        console.log("onShareAppMessage:" + JSON.stringify(res))
+                        console.log(res.shareTickets[0])
+                        // console.log
+                        wx.getShareInfo({
+                            shareTicket: res.shareTickets[0],
+                            success: function (res) {'success' + console.log(res) },
+                            fail: function (res) {'fail' +  console.log(res) },
+                            complete: function (res) {'complete' +  console.log(res) }
+                        })
+                    },
+                    fail: function (res) {
+                        // 分享失败
+                        console.log(res)
+                    }
+                }
+            });
+        }
     },
 
     _loadBackground () {
@@ -110,6 +148,8 @@ cc.Class({
 
 
     funcStart (event, customEventData) {
+        cc.game.restart();
+        return;
         Global.SocketController.joinRoom(customEventData, function (err, data) {
             if(err){
                 console.log('join_room err: ' + JSON.stringify(err));

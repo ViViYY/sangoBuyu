@@ -1,4 +1,5 @@
 import Global from './../Global'
+import WXBizDataCrypt from './../Util/WXBizDataCrypt'
 import ButtonSimpleStype from './../Util/ButtonSimpleStyle'
 import Define from './../Define'
 let Buffer = require('buffer').Buffer;
@@ -62,6 +63,18 @@ cc.Class({
                 this._loadBackground();
             });
         }
+        wx.showShareMenu({
+            withShareTicket: true,
+            success: function (res) {
+                // 分享成功
+                console.log('shareMenu share success')
+                console.log('分享'+res)
+            },
+            fail: function (res) {
+                // 分享失败
+                console.log(res)
+            }
+        });
     },
 
     onDestroy () {
@@ -75,8 +88,7 @@ cc.Class({
             this._bgNode = new cc.Node('startbg');
             this.node.addChild(this._bgNode);
             let bg = this._bgNode.addComponent(cc.Sprite);
-            var obj = Global.ResourcesManager.getRes(url);
-            bg.spriteFrame = obj;
+            bg.spriteFrame = Global.ResourcesManager.getRes(url);
             this._bgNode.scaleX = this.sx;
             this._bgNode.scaleY = this.sy;
 
@@ -98,65 +110,6 @@ cc.Class({
     _hideLoginNode () {
         let loginNode = this.node.getChildByName('wxLoginNode');
         loginNode.active = false;
-    },
-
-    funcStart1 (event, customEventData) {
-        console.log('cc.sys.platform = ' + cc.sys.platform);
-        console.log('cc.sys.WECHAT_GAME = ' + cc.sys.WECHAT_GAME);
-        if(cc.sys.platform === cc.sys.WECHAT_GAME){
-            wx.cloud.init({
-                env: 'test-097b9b'
-            });
-            console.log('aaaa 55');
-            wx.cloud.callFunction({
-                // 云函数名称
-                name: 'add',
-                // 传给云函数的参数
-                data: {
-                    a: 1,
-                    b: 2,
-                },
-                success: function(res) {
-                    console.log('wx.cloud.callFunction:add 1 : ' + res.result.sum);
-                },
-                fail: console.error
-            })
-
-            console.log('aaaa 66');
-            wx.cloud.callFunction({
-                // 要调用的云函数名称
-                name: 'getUserInfo',
-                // 传递给云函数的参数
-                success: res => {
-                    console.log('wx.cloud.callFunction:add 2 : ' + JSON.stringify(res.result));
-                },
-                fail: err => {
-                    console.log('wx.cloud.callFunction:add 2 err : ' + err);
-                },
-                complete: () => {
-                    console.log('wx.cloud.callFunction: 2  complete ');
-                }
-            })
-            let button = wx.createUserInfoButton({
-                type: 'text',
-                text: '获取用户信息',
-                style: {
-                    left: 10,
-                    top: 76,
-                    width: 200,
-                    height: 40,
-                    lineHeight: 40,
-                    backgroundColor: '#ff0000',
-                    color: '#ffffff',
-                    textAlign: 'center',
-                    fontSize: 16,
-                    borderRadius: 4
-                }
-            });
-            button.onTap((res) => {
-                console.log(res)
-            });
-        }
     },
 
     startWXLogin () {
@@ -191,18 +144,12 @@ cc.Class({
                     wx.getUserInfo({
                         success: (res) => {
                             console.log(' [login] 用户数据读取 成功 res： ' + JSON.stringify(res));
-                            // const uid = decodedData2.openid;
-                            // const pwd = decodedData2.openid;
-                            // const nickname = res.userInfo.nickName;
-                            // const avatarUrl = decodedData2.avatarUrl;
-                            // console.log('avatarUrl = ' + avatarUrl);
-                            // console.log('nickname = ' + nickname);
-                            // this.setUserConfig(uid, pwd, nickname, avatarUrl);
-
                             console.log('this.AppID = ' + this.AppID);
                             console.log('this.SessionKey = ' + this.SessionKey);
 
-                            let decodedData2 = this.wxDecrypt(this.AppID, this.SessionKey, res.iv, res.encryptedData);
+                            let pc = new WXBizDataCrypt(this.AppID, this.SessionKey);
+                            var decodedData2 = pc.decryptData(res.encryptedData , res.iv);
+                            //let decodedData2 = this.wxDecrypt(this.AppID, this.SessionKey, res.iv, res.encryptedData);
                             // 设置账号信息
                             console.log('decodedData2 = ' + JSON.stringify(decodedData2));
                             const uid = decodedData2.openId;
@@ -233,10 +180,10 @@ cc.Class({
         let btnHeight = 114;
         //用户信息
         let button4 = wx.createUserInfoButton({
-            //type: 'image',
-            //image: 'res/raw-assets/05/051f1653-9edf-4684-af25-ee9a2110835f.bd3a9.jpg',
-            type: 'text',
-            text: '微信登陆',
+            type: 'image',
+            image: 'res/raw-assets/ee/ee85f249-b60d-432f-acf1-5b157bfd0a0f.c3ff1.png',
+            // type: 'text',
+            // text: '微信登陆',
             style: {
                 left: (sysInfo.windowWidth - btnWith) / 2,
                 top: sysInfo.windowHeight - btnHeight - 15,
@@ -260,7 +207,10 @@ cc.Class({
                 console.log('this.AppID = ' + this.AppID);
                 console.log('this.SessionKey = ' + this.SessionKey);
                 console.log('this.iv = ' + res.iv);
-                let decodedData2 = this.wxDecrypt(this.AppID, this.SessionKey, res.iv, res.encryptedData);
+
+                let pc = new WXBizDataCrypt(this.AppID, this.SessionKey);
+                var decodedData2 = pc.decryptData(res.encryptedData , res.iv);
+                // let decodedData2 = this.wxDecrypt(this.AppID, this.SessionKey, res.iv, res.encryptedData);
                 // 设置账号信息
                 console.log('decodedData2 = ' + JSON.stringify(decodedData2));
                 const uid = decodedData2.openId;
@@ -275,25 +225,30 @@ cc.Class({
 
     },
 
-    wxDecrypt(appId, sessionKey, ivStr, encryptedData) {
-        const key = new Buffer(sessionKey, 'base64', sessionKey.length);
-        const encrypted = new Buffer(encryptedData, 'base64', encryptedData.length);
-        const iv = new Buffer(ivStr, 'base64', ivStr.length);
-        let decoded;
-        try {
-            // 解密
-            const decipher = crypto.createDecipheriv('aes-128-cbc', key, iv);
-            // 设置自动 padding 为 true，删除填充补位
-            decipher.setAutoPadding(true);
-            decoded = decipher.update(encrypted, 'binary', 'utf8');
-            decoded += decipher.final('utf8');
-            decoded = JSON.parse(decoded);
-        } catch (err) {
-            throw new Error('Illegal Buffer');
-        }
-        // console.log(' [wxDecrypt] decoded =   ' + JSON.stringify(decoded));
-        return decoded;
-    },
+    // wxDecrypt(appId, sessionKey, ivStr, encryptedData) {
+    //     console.log('[wxDecrypt]appId = ' + appId);
+    //     console.log('[wxDecrypt]ivStr = ' + ivStr);
+    //     const key = new Buffer(sessionKey, 'base64', sessionKey.length);
+    //     const encrypted = new Buffer(encryptedData, 'base64', encryptedData.length);
+    //     const iv = new Buffer(ivStr, 'base64', ivStr.length);
+    //     let decoded;
+    //     try {
+    //         console.log('[wxDecrypt]key = ' + key);
+    //         // 解密
+    //         console.log('[wxDecrypt]解密');
+    //         const decipher = crypto.createDecipheriv('aes-128-cbc', key, iv);
+    //         // 设置自动 padding 为 true，删除填充补位
+    //         decipher.setAutoPadding(true);
+    //         decoded = decipher.update(encrypted, 'binary', 'utf8');
+    //         decoded += decipher.final('utf8');
+    //         decoded = JSON.parse(decoded);
+    //     } catch (err) {
+    //         throw new Error('Illegal Buffer');
+    //     }
+    //     console.log('[wxDecrypt]finish');
+    //     // console.log(' [wxDecrypt] decoded =   ' + JSON.stringify(decoded));
+    //     return decoded;
+    // },
 
     // 1 return code -> session_key openid
     WXLogin () {

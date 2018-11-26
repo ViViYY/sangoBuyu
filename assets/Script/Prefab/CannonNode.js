@@ -121,7 +121,6 @@ cc.Class({
                 break;
         }
         this.changeRotation(cc.view.getVisibleSize().width / 2, cc.view.getVisibleSize().height / 2);
-        console.log('trst 2');
         cc.loader.load({
             url: this._avatarUrl,
             type: 'png'
@@ -129,7 +128,6 @@ cc.Class({
             if (err) {
                 console.error("#####cc.loader.load:" + err);
             } else {
-                console.log('trst 1');
                 let oldWidth = this.head.node.width;
                 let oldHeight = this.head.node.height;
                 this.head.spriteFrame = new cc.SpriteFrame(texture);
@@ -175,7 +173,7 @@ cc.Class({
         }
     },
 
-    otherPlayerShotPlay (rotation, targetFishId) {
+    otherPlayerShotPlay (rotation, targetFishId, silver) {
         // console.log('otherPlayerShotPlay');
         //rotation
         //刷新炮弹的 角度
@@ -198,6 +196,7 @@ cc.Class({
         this._isShotting = true;
         this._animation.getComponent(cc.Animation).play('cannon' + this._level);
         this.shot(targetFishId);
+        this.refreshSilver(silver);
     },
 
     leave () {
@@ -232,11 +231,16 @@ cc.Class({
             //cc.director.emit('shot', this.cannonNode.rotation, Global.GameData.getPlayer().targetFishId);
         }
         //消耗coin
-        this._costCoin();
+        // this._costCoin();
     },
 
     _costCoin () {
         this._silver -= Define.cannonCost;
+        this.labelCoin.string = this._silver;
+    },
+
+    refreshSilver (num) {
+        this._silver = num;
         this.labelCoin.string = this._silver;
     },
 

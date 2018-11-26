@@ -89,9 +89,6 @@
       },
       {
         "__id__": 43
-      },
-      {
-        "__id__": 44
       }
     ],
     "_prefab": null,
@@ -1444,7 +1441,7 @@
     "_position": {
       "__type__": "cc.Vec3",
       "x": -293,
-      "y": -292,
+      "y": -116.5,
       "z": 0
     },
     "_scale": {
@@ -1763,11 +1760,11 @@
     "_enabled": true,
     "alignMode": 1,
     "_target": null,
-    "_alignFlags": 9,
+    "_alignFlags": 12,
     "_left": 24,
     "_right": 0,
     "_top": 24,
-    "_bottom": 24.5,
+    "_bottom": 200,
     "_verticalCenter": 0,
     "_horizontalCenter": 0,
     "_isAbsLeft": true,
@@ -1777,7 +1774,7 @@
     "_isAbsHorizontalCenter": true,
     "_isAbsVerticalCenter": true,
     "_originalWidth": 0,
-    "_originalHeight": 0,
+    "_originalHeight": 135,
     "_id": "b0m5NP61hNIK8O6IPzfhgZ"
   },
   {
@@ -1884,20 +1881,6 @@
     "_id": "20ye/NicdOW5B3Dxc4MGjG"
   },
   {
-    "__type__": "0b2f8RS8KZPEbZlZXEn8CG3",
-    "_name": "",
-    "_objFlags": 0,
-    "node": {
-      "__id__": 2
-    },
-    "_enabled": false,
-    "_bgNode": null,
-    "messageLabel": {
-      "__id__": 41
-    },
-    "_id": "25zsC+s1FAy66HS374fd8/"
-  },
-  {
     "__type__": "531356gnq5IK6fDGjUwoBLN",
     "_name": "",
     "_objFlags": 0,
@@ -1919,6 +1902,6 @@
     "AppSecret": "0862ad4e9fabe7225c7aaf53ce2e96b4",
     "SessionKey": "",
     "openid": "",
-    "_id": "aewkIcHJlBWIFPvBpaj8x8"
+    "_id": "d4oVrcK1NHxqOS6ECWmhR8"
   }
 ]

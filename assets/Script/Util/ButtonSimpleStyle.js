@@ -7,9 +7,9 @@ const ButtonSimpleStyle = {
     }),
     BACK: cc.Enum({
         atlasUrl: "Atlas/icon",
-        spriteNormalName: "btn_fanhuianniuanxia",
+        spriteNormalName: "btn_fanhuianniu",
         spritePressName: "btn_fanhuianniuanxia",
-        spriteDisabledName: "btn_fanhuianniu"
+        spriteDisabledName: "btn_fanhuianniuhui"
     }),
 };
 export default ButtonSimpleStyle;

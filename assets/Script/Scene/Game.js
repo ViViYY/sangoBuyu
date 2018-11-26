@@ -1,6 +1,5 @@
 import Global from "../Global";
 import Define from './../Define'
-import ButtonSimpleStype from "../Util/ButtonSimpleStyle";
 
 
 const SeatMap = [[0, 1, 2, 3], [1, 0, 3, 2], [2, 3, 0, 1], [3, 2, 1, 0]];
@@ -37,6 +36,10 @@ cc.Class({
             default: 1,
             type: cc.Integer,
         },
+        sharePanelPrefab: {
+            type: cc.Prefab,
+            default: null,
+        },
     },
 
     onLoad () {
@@ -71,11 +74,16 @@ cc.Class({
         // console.log("this.sx:" + this.sx);
         // console.log("this.sy:" + this.sy);
         this.topLayer.width = visibleSize.width;
-        this.topLayer.height = visibleSize.width;
+        this.topLayer.height = visibleSize.height;
         this.topLayer.on(cc.Node.EventType.TOUCH_START, (event) => {
             if(this._cannonNode){
                 //send-notification-'shot'
                 cc.director.emit('auto-shot', 2);
+                // 检测金币
+                if(Global.GameData.getPlayer().silver < Define.cannonCost){
+                    this._showSharePanel();
+                    return;
+                }
                 //检测是否点中鱼
                 const pos = this.node.convertToNodeSpace(event.touch.getLocation());
                 if(0 === Global.GameData.getPlayer().targetFishId){
@@ -119,10 +127,10 @@ cc.Class({
                 let player_add = data.data;
                 const mySeatId = Global.GameData.getPlayer().seatId;
                 let cannonSeatId = player_add.seatId;
-                console.log('mySeatId = ' + mySeatId);
-                console.log('cannonSeatId = ' + cannonSeatId);
+                // console.log('mySeatId = ' + mySeatId);
+                // console.log('cannonSeatId = ' + cannonSeatId);
                 let finalSeatId = SeatMap[mySeatId][cannonSeatId];
-                console.log('final seat id = ' + finalSeatId);
+                // console.log('final seat id = ' + finalSeatId);
                 this._loadCannon(player_add.uid, player_add.nickname, player_add.avatarUrl, player_add.silver, player_add.level, finalSeatId);
             }
         });
@@ -173,7 +181,13 @@ cc.Class({
             // console.log('@@onPlayerShot:' + JSON.stringify(shotData));
             if(shotData.shotter != Global.GameData.getPlayer().uid || shotData.auto === 1){
                 const player = Global.GameData.getRoomData().getPlayer(shotData.shotter);
-                player.getComponent('CannonNode').otherPlayerShotPlay(shotData.rotation, shotData.targetFishId);
+                player.getComponent('CannonNode').otherPlayerShotPlay(shotData.rotation, shotData.targetFishId, shotData.silver);
+            }
+            //刷新金币
+            if(shotData.shotter === Global.GameData.getPlayer().uid){
+                const player = Global.GameData.getRoomData().getPlayer(shotData.shotter);
+                player.getComponent('CannonNode').refreshSilver(shotData.silver);
+                Global.GameData.getPlayer().silver = shotData.silver;
             }
         });
         //其他玩家离开
@@ -208,6 +222,17 @@ cc.Class({
                 player.getComponent('CannonNode').levelUp(levelData.level);
             }
         });
+        //玩家金币刷新
+        Global.SocketController.registerSEventListener('silver_refresh', (data) => {
+            const _data = data.data;
+            const player = Global.GameData.getRoomData().getPlayer(_data.uid);
+            if(player){
+                player.getComponent('CannonNode').refreshSilver(_data.silver);
+            }
+            if(Global.GameData.getPlayer().uid === _data.uid){
+                Global.GameData.getPlayer().silver = _data.silver;
+            }
+        });
     },
     onDestroy () {
         console.log('Game Scene onDestroy');
@@ -219,6 +244,7 @@ cc.Class({
         Global.SocketController.removeSEventListener('player_shot');
         Global.SocketController.removeSEventListener('player_exit');
         Global.SocketController.removeSEventListener('level_up');
+        Global.SocketController.removeSEventListener('silver_refresh');
         cc.director.getCollisionManager().enabled = false;
         cc.director.off('shot');
         // cc.director.getCollisionManager().enabledDebugDraw = false;
@@ -351,6 +377,13 @@ cc.Class({
         if(serverFishNumber != deadFishNumber + localFishNumber2){
             console.log('onSyncGameData 3, fishData:' + JSON.stringify(fishData));
         }
+    },
+
+    // 显示分享面板
+    _showSharePanel () {
+        let shareNode = cc.instantiate(this.sharePanelPrefab);
+        shareNode.parent = this.topLayer;
+        shareNode.zIndex = 10000;
     },
 
 });

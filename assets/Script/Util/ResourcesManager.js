@@ -5,16 +5,16 @@ const ResourcesManager = function () {
     that.resources = {};
     let logOpen = false;
     const load = function (path, type, cb) {
-        var t;
-        if(type == Define.resourceType.CCSpriteFrame){
+        let t;
+        if(type === Define.resourceType.CCSpriteFrame){
             t = cc.SpriteFrame;
-        } else if(type == Define.resourceType.CCSpriteAtlas){
+        } else if(type === Define.resourceType.CCSpriteAtlas){
             t = cc.SpriteAtlas;
-        } else if(type == Define.resourceType.CCButton){
+        } else if(type === Define.resourceType.CCButton){
             t = cc.Prefab;
-        } else if(type == Define.resourceType.CCFont){
+        } else if(type === Define.resourceType.CCFont){
             t = cc.Font;
-        } else if(type == Define.resourceType.CCTexture){
+        } else if(type === Define.resourceType.CCTexture){
             t = cc.Texture2D;
         }
 
@@ -35,7 +35,7 @@ const ResourcesManager = function () {
         const loadCb = function (path, res) {
             _loadCount++;
             that.resources[path] = res;
-            if(_loadCount == pathList.length){
+            if(_loadCount === pathList.length){
                 if(logOpen) console.log(' 全部资源加载完毕 ');
                 if(cb){
                     cb();
@@ -43,12 +43,12 @@ const ResourcesManager = function () {
             }
         };
         for(let i = 0; i < pathList.length; i++){
-            var resPath = pathList[i];
+            let resPath = pathList[i];
             //资源存在
             if(that.resources[resPath]){
                 if(logOpen) console.log(' ResourceManager load res exist path: ' + resPath + ' , type: ' + that.resources[resPath].__classname__ );
                 _loadCount++;
-                if(_loadCount == pathList.length){
+                if(_loadCount === pathList.length){
                     if(logOpen) console.log(' 全部资源加载完毕 ');
                     if(cb){
                         cb();
