@@ -1,6 +1,5 @@
 import Global from './../Global'
 import WXBizDataCrypt from './../Util/WXBizDataCrypt'
-import ButtonSimpleStype from './../Util/ButtonSimpleStyle'
 import Define from './../Define'
 let Buffer = require('buffer').Buffer;
 let crypto = require('crypto');
@@ -63,18 +62,20 @@ cc.Class({
                 this._loadBackground();
             });
         }
-        wx.showShareMenu({
-            withShareTicket: true,
-            success: function (res) {
-                // 分享成功
-                console.log('shareMenu share success')
-                console.log('分享'+res)
-            },
-            fail: function (res) {
-                // 分享失败
-                console.log(res)
-            }
-        });
+        if(cc.sys.platform === cc.sys.WECHAT_GAME){
+            wx.showShareMenu({
+                withShareTicket: true,
+                success: function (res) {
+                    // 分享成功
+                    console.log('shareMenu share success')
+                    console.log('分享'+res)
+                },
+                fail: function (res) {
+                    // 分享失败
+                    console.log(res)
+                }
+            });
+        }
     },
 
     onDestroy () {
@@ -84,6 +85,7 @@ cc.Class({
 
     _loadBackground () {
         let url = 'Image/startbg';
+        console.log('game load: ' + url);
         Global.ResourcesManager.loadList([url], Define.resourceType.CCSpriteFrame, () => {
             this._bgNode = new cc.Node('startbg');
             this.node.addChild(this._bgNode);
@@ -113,26 +115,28 @@ cc.Class({
     },
 
     startWXLogin () {
-        wx.checkSession({
-            success: () => {
-                console.log(' [login]session 可用 ');
-                //session_key 未过期，并且在本生命周期一直有效
-                // 本地取session
-                this.SessionKey = cc.sys.localStorage.getItem('buyusession');
-                if(this.SessionKey){
-                    this._getWXData();
-                } else {
-                    console.log('本地session无效');
+        if(cc.sys.platform === cc.sys.WECHAT_GAME){
+            wx.checkSession({
+                success: () => {
+                    console.log(' [login]session 可用 ');
+                    //session_key 未过期，并且在本生命周期一直有效
+                    // 本地取session
+                    this.SessionKey = cc.sys.localStorage.getItem('buyusession');
+                    if(this.SessionKey){
+                        this._getWXData();
+                    } else {
+                        console.log('本地session无效');
+                        this.WXLogin(); //重新登录
+                    }
+
+                },
+                fail: () => {
+                    console.log(' [login]session 过期 ');
+                    // session_key 已经失效，需要重新执行登录流程
                     this.WXLogin(); //重新登录
                 }
-
-            },
-            fail: () => {
-                console.log(' [login]session 过期 ');
-                // session_key 已经失效，需要重新执行登录流程
-                this.WXLogin(); //重新登录
-            }
-        });
+            });
+        }
     },
 
     //
@@ -181,7 +185,7 @@ cc.Class({
         //用户信息
         let button4 = wx.createUserInfoButton({
             type: 'image',
-            image: 'res/raw-assets/ee/ee85f249-b60d-432f-acf1-5b157bfd0a0f.c3ff1.png',
+            image: 'https://buyu.jtcamp.com/res/raw-assets/ee/ee85f249-b60d-432f-acf1-5b157bfd0a0f.c3ff1.png',
             // type: 'text',
             // text: '微信登陆',
             style: {

@@ -148,8 +148,6 @@ cc.Class({
 
 
     funcStart (event, customEventData) {
-        cc.game.restart();
-        return;
         Global.SocketController.joinRoom(customEventData, function (err, data) {
             if(err){
                 console.log('join_room err: ' + JSON.stringify(err));

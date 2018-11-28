@@ -210,9 +210,9 @@
     "_clearFlags": 7,
     "_backgroundColor": {
       "__type__": "cc.Color",
-      "r": 0,
-      "g": 0,
-      "b": 0,
+      "r": 190,
+      "g": 166,
+      "b": 166,
       "a": 255
     },
     "_depth": -1,
@@ -1902,6 +1902,6 @@
     "AppSecret": "0862ad4e9fabe7225c7aaf53ce2e96b4",
     "SessionKey": "",
     "openid": "",
-    "_id": "d4oVrcK1NHxqOS6ECWmhR8"
+    "_id": "b9A/GSu8lO7oG5pNdQ3xAC"
   }
 ]

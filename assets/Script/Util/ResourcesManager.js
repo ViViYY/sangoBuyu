@@ -1,5 +1,6 @@
 import Define from './../Define'
 
+
 const ResourcesManager = function () {
     let that = {};
     that.resources = {};
